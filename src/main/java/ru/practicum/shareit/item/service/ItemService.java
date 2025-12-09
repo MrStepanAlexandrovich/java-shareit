@@ -9,9 +9,9 @@ public interface ItemService {
 
     Collection<Item> search(String description);
 
-    Collection<Item> getAll();
+    Item edit(int itemId, Item item, int userId);
 
-    Item edit(int id, Item item);
+    Collection<Item> getAll(int id);
 
     Item add(Item item);
 }

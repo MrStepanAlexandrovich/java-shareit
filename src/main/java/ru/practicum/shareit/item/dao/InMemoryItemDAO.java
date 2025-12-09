@@ -3,14 +3,12 @@ package ru.practicum.shareit.item.dao;
 import org.springframework.stereotype.Component;
 import ru.practicum.shareit.item.model.Item;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
+import java.util.*;
 
 @Component
 public class InMemoryItemDAO implements ItemDAO {
     private static int counter = 0;
-    private final List<Item> items = new ArrayList<>();
+    private final Map<Integer, Item> items = new HashMap();
 
     @Override
     public Item getById(int id) {
@@ -19,29 +17,49 @@ public class InMemoryItemDAO implements ItemDAO {
 
     @Override
     public Collection<Item> searchByDesc(String description) {
-        return items.stream()
-                .filter(item -> item.getDescription().contains(description))
-                .toList();
+        if (!description.isEmpty()) {
+            return items.values()
+                    .stream()
+                    .filter(item -> item.getDescription().toLowerCase().contains(description.toLowerCase())
+                            || item.getName().toLowerCase().contains(description.toLowerCase()))
+                    .filter(Item::getIsAvailable)
+                    .toList();
+        } else {
+            return new ArrayList<>();
+        }
     }
 
     @Override
-    public Collection<Item> getAll() {
-        return items;
+    public Collection<Item> getAllOfUser(int id) {
+        return items.values()
+                .stream()
+                .filter(item -> item.getOwner() == id)
+                .toList();
     }
 
     @Override
     public Item edit(int id, Item item) {
         Item oldItem = items.get(id);
-        oldItem.setName(item.getName());
-        oldItem.setDescription(item.getDescription());
-        oldItem.setAvailable(item.isAvailable());
+
+        if (item.getName() != null) {
+            oldItem.setName(item.getName());
+        }
+
+        if (item.getIsAvailable() != null) {
+            oldItem.setIsAvailable(item.getIsAvailable());
+        }
+
+        if (item.getDescription() != null) {
+            oldItem.setDescription(item.getDescription());
+        }
+
         return oldItem;
     }
 
     @Override
     public Item add(Item item) {
-        items.add(item);
-        item.setId(++counter);
+        items.put(++counter, item);
+        item.setId(counter);
         return item;
     }
 }

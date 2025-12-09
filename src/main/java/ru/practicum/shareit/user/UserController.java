@@ -34,7 +34,7 @@ public class UserController {
     @PatchMapping("/{userId}")
     public UserDto editUser(
             @PathVariable int userId,
-            @RequestBody @Valid UserDto userDto
+            @RequestBody UserDto userDto
     ) {
         return UserMapper.toUserDto(
                 userService.edit(

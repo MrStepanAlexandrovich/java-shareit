@@ -3,7 +3,9 @@ package ru.practicum.shareit.user.dao;
 import org.springframework.stereotype.Component;
 import ru.practicum.shareit.user.model.User;
 
+import java.util.Collection;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 @Component
@@ -26,8 +28,12 @@ public class InMemoryUserDao implements UserDao {
     @Override
     public User edit(int id, User user) {
         User oldUser = users.get(id);
-        oldUser.setName(user.getName());
-        oldUser.setEmail(user.getEmail());
+        if (user.getName() != null) {
+            oldUser.setName(user.getName());
+        }
+        if (user.getEmail() != null) {
+            oldUser.setEmail(user.getEmail());
+        }
 
         return oldUser;
     }
@@ -41,5 +47,10 @@ public class InMemoryUserDao implements UserDao {
         }
 
         return user;
+    }
+
+    @Override
+    public Collection<User> getAll() {
+        return users.values();
     }
 }

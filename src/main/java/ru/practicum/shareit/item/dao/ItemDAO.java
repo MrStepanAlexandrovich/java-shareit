@@ -9,7 +9,7 @@ public interface ItemDAO {
 
     Collection<Item> searchByDesc(String description);
 
-    Collection<Item> getAll();
+    Collection<Item> getAllOfUser(int id);
 
     Item edit(int id, Item item);
 

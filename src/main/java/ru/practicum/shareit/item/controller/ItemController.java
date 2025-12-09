@@ -1,6 +1,8 @@
 package ru.practicum.shareit.item.controller;
 
+import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import ru.practicum.shareit.item.dto.ItemDto;
 import ru.practicum.shareit.item.dto.ItemMapper;
@@ -19,9 +21,10 @@ public class ItemController {
 
     @PostMapping
     public ItemDto add(
-            @RequestBody ItemDto item,
+            @RequestBody @Validated ItemDto item,
             @RequestHeader("X-Sharer-User-Id") int userId
     ) {
+        item.setOwner(userId);
         return ItemMapper.toItemDto(itemService.add(ItemMapper.toItem(item)));
     }
 
@@ -31,7 +34,13 @@ public class ItemController {
             @PathVariable int itemId,
             @RequestHeader("X-Sharer-User-Id") int userId
     ) {
-        return ItemMapper.toItemDto(itemService.edit(itemId, ItemMapper.toItem(itemDto)));
+        return ItemMapper.toItemDto(
+                itemService.edit(
+                        itemId,
+                        ItemMapper.toItem(itemDto),
+                        userId
+                )
+        );
     }
 
     @GetMapping("/{itemId}")
@@ -43,8 +52,8 @@ public class ItemController {
     }
 
     @GetMapping
-    public Collection<ItemDto> getItems() {
-        return itemService.getAll()
+    public Collection<ItemDto> getItems(@RequestHeader("X-Sharer-User-Id") int userId) {
+        return itemService.getAll(userId)
                 .stream()
                 .map(ItemMapper::toItemDto)
                 .toList();
