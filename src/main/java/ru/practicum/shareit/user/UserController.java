@@ -2,10 +2,11 @@ package ru.practicum.shareit.user;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import ru.practicum.shareit.user.dto.UserDto;
 import ru.practicum.shareit.user.dto.UserMapper;
-import ru.practicum.shareit.user.model.User;
 import ru.practicum.shareit.user.service.UserService;
 
 /**
@@ -18,34 +19,41 @@ public class UserController {
     private final UserService userService;
 
     @GetMapping("/{userId}")
-    public UserDto getUser(@PathVariable int userId) {
-        return UserMapper.toUserDto(userService.get(userId));
+    public ResponseEntity getUser(@PathVariable int userId) {
+        return new ResponseEntity(
+                UserMapper.toUserDto(userService.get(userId)),
+                HttpStatus.OK
+        );
     }
 
     @PostMapping
-    public UserDto createUser(@RequestBody @Valid UserDto userDto) {
-        return UserMapper.toUserDto(
-                userService.add(
-                        UserMapper.toUser(userDto)
-                )
+    public ResponseEntity createUser(@RequestBody @Valid UserDto userDto) {
+        return new ResponseEntity(
+                UserMapper.toUserDto(userService.add(UserMapper.toUser(userDto))),
+                HttpStatus.OK
         );
     }
 
     @PatchMapping("/{userId}")
-    public UserDto editUser(
+    public ResponseEntity editUser(
             @PathVariable int userId,
             @RequestBody UserDto userDto
     ) {
-        return UserMapper.toUserDto(
-                userService.edit(
-                        userId,
-                        UserMapper.toUser(userDto)
-                )
+        return new ResponseEntity(
+                UserMapper.toUserDto(userService.edit(
+                                userId,
+                                UserMapper.toUser(userDto)
+                        )
+                ),
+                HttpStatus.OK
         );
     }
 
     @DeleteMapping("/{userId}")
-    public UserDto removeUser(@PathVariable int userId) {
-        return UserMapper.toUserDto(userService.delete(userId));
+    public ResponseEntity removeUser(@PathVariable int userId) {
+        return new ResponseEntity(
+                UserMapper.toUserDto(userService.delete(userId)),
+                HttpStatus.OK
+        );
     }
 }
