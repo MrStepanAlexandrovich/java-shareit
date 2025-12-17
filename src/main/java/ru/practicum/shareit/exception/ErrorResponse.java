@@ -12,7 +12,7 @@ public class ErrorResponse {
     private String error;
     private String message;
 
-    public ErrorResponse (HttpStatus status, String error, String message) {
+    public ErrorResponse(HttpStatus status, String error, String message) {
         this.timestamp = LocalDateTime.now();
         this.status = status;
         this.error = error;
