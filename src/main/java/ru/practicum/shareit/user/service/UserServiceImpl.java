@@ -3,8 +3,11 @@ package ru.practicum.shareit.user.service;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import ru.practicum.shareit.exception.ConflictException;
+import ru.practicum.shareit.exception.NotFoundException;
 import ru.practicum.shareit.user.dao.UserDao;
 import ru.practicum.shareit.user.model.User;
+
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -22,7 +25,12 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public User get(int id) {
-        return userDao.get(id);
+        Optional<User> userOptional = userDao.get(id);
+        if (userOptional.isPresent()) {
+            return userOptional.get();
+        } else {
+            throw new NotFoundException("User with id = " + id + " wasn't found");
+        }
     }
 
     @Override
@@ -35,20 +43,15 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public User delete(int id) {
-        return userDao.delete(id);
+    public void delete(int id) {
+        userDao.delete(id);
     }
 
     private boolean isEmailUnique(String email) {
-        if (!userDao.getAll().isEmpty()) {
-            return userDao.getAll()
-                    .stream()
-                    .map(User::getEmail)
-                    .filter(email1 -> email1 != null)
-                    .noneMatch(email2 -> email2.equals(email));
-        } else {
-            return true;
-        }
-
+        return userDao.getAll()
+                .stream()
+                .map(User::getEmail)
+                .filter(email1 -> email1 != null)
+                .noneMatch(email2 -> email2.equals(email));
     }
 }

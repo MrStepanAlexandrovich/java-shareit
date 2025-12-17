@@ -3,15 +3,16 @@ package ru.practicum.shareit.user.dao;
 import ru.practicum.shareit.user.model.User;
 
 import java.util.Collection;
+import java.util.Optional;
 
 public interface UserDao {
     User add(User user);
 
-    User get(int id);
+    Optional<User> get(int id);
 
     User edit(int id, User user);
 
-    User delete(int id);
+    void delete(int id);
 
     Collection<User> getAll();
 }

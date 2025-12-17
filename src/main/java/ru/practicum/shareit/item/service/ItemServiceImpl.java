@@ -9,6 +9,7 @@ import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.user.dao.UserDao;
 
 import java.util.Collection;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -28,7 +29,12 @@ public class ItemServiceImpl implements ItemService {
 
     @Override
     public Item get(int id) {
-        return itemDAO.getById(id);
+        Optional<Item> itemOptional = itemDAO.getById(id);
+        if (itemOptional.isPresent()) {
+            return itemDAO.getById(id).get();
+        } else {
+            throw new NotFoundException("item with id = " + id + " wasn't found");
+        }
     }
 
     @Override
@@ -48,16 +54,22 @@ public class ItemServiceImpl implements ItemService {
     }
 
     private void checkUser(int userId, int itemId) {
-       if (itemDAO.getById(itemId).getOwner() != userId) {
-           throw new ForbiddenException("User with id = " + userId + " can't update item");
-       }
+        Optional<Item> itemOptional = itemDAO.getById(itemId);
+
+        if (itemOptional.isEmpty()) {
+            throw new NotFoundException("item with id = " + itemId + " wasn't found");
+        } else {
+            if (itemOptional.get().getOwner() != userId) {
+                throw new ForbiddenException("User with id = " + userId + " can't update item");
+            }
+        }
     }
 
     private void validate(Item item) {
         if (item.getOwner() == null) {
             throw new NotFoundException("User doesn't exist");
         }
-        if (userDAO.get(item.getOwner()) == null) {
+        if (userDAO.get(item.getOwner()).isEmpty()) {
             throw new NotFoundException("User doesn't exist");
         }
     }

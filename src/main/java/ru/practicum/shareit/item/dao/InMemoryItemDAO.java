@@ -7,12 +7,12 @@ import java.util.*;
 
 @Component
 public class InMemoryItemDAO implements ItemDAO {
-    private static int counter = 0;
+    private int counter = 0;
     private final Map<Integer, Item> items = new HashMap();
 
     @Override
-    public Item getById(int id) {
-        return items.get(id);
+    public Optional<Item> getById(int id) {
+        return Optional.ofNullable(items.get(id));
     }
 
     @Override

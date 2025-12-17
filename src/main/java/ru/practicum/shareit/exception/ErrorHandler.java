@@ -7,25 +7,23 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 import ru.practicum.shareit.item.controller.ItemController;
 import ru.practicum.shareit.user.UserController;
 
-import java.util.Map;
-
 @RestControllerAdvice(assignableTypes = {UserController.class, ItemController.class})
 public class ErrorHandler {
     @ExceptionHandler
     @ResponseStatus(HttpStatus.CONFLICT)
-    public Map<String, String> handleConflictException(ConflictException e) {
-        return Map.of("error", e.getMessage());
+    public ErrorResponse handleConflictException(ConflictException e) {
+        return new ErrorResponse(HttpStatus.CONFLICT, "error", e.getMessage());
     }
 
     @ExceptionHandler
     @ResponseStatus(HttpStatus.NOT_FOUND)
-    public Map<String, String> handleNotFoundException(NotFoundException e) {
-        return Map.of("error", e.getMessage());
+    public ErrorResponse handleNotFoundException(NotFoundException e) {
+        return new ErrorResponse(HttpStatus.NOT_FOUND, "error", e.getMessage());
     }
 
     @ExceptionHandler
     @ResponseStatus(HttpStatus.FORBIDDEN)
-    public Map<String, String> handleForbiddenException(ForbiddenException e) {
-        return Map.of("error", e.getMessage());
+    public ErrorResponse handleForbiddenException(ForbiddenException e) {
+        return new ErrorResponse(HttpStatus.FORBIDDEN, "error", e.getMessage());
     }
 }
