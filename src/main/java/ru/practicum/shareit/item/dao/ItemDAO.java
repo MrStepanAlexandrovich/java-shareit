@@ -1,0 +1,18 @@
+package ru.practicum.shareit.item.dao;
+
+import ru.practicum.shareit.item.model.Item;
+
+import java.util.Collection;
+import java.util.Optional;
+
+public interface ItemDAO {
+    Optional<Item> getById(int id);
+
+    Collection<Item> searchByDesc(String description);
+
+    Collection<Item> getAllOfUser(int id);
+
+    Item edit(int id, Item item);
+
+    Item add(Item item);
+}
