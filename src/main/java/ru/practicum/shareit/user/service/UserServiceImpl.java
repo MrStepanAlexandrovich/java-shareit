@@ -4,7 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import ru.practicum.shareit.exception.ConflictException;
 import ru.practicum.shareit.exception.NotFoundException;
-import ru.practicum.shareit.user.dao.UserDao;
+import ru.practicum.shareit.user.dao.UserRepository;
 import ru.practicum.shareit.user.model.User;
 
 import java.util.Optional;
@@ -12,12 +12,12 @@ import java.util.Optional;
 @Service
 @RequiredArgsConstructor
 public class UserServiceImpl implements UserService {
-    private final UserDao userDao;
+    private final UserRepository userRepository;
 
     @Override
     public User add(User user) {
         if (isEmailUnique(user.getEmail())) {
-            return userDao.add(user);
+            return userRepository.save(user);
         } else {
             throw new ConflictException("Email is not unique");
         }
@@ -25,7 +25,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public User get(int id) {
-        Optional<User> userOptional = userDao.get(id);
+        Optional<User> userOptional = userRepository.findById(id);
         if (userOptional.isPresent()) {
             return userOptional.get();
         } else {
@@ -35,8 +35,9 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public User edit(int id, User user) {
+        user.setId(id);
         if (isEmailUnique(user.getEmail())) {
-            return userDao.edit(id, user);
+            return  userRepository.save(user);
         } else {
             throw new ConflictException("Email is not unique");
         }
@@ -44,11 +45,11 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public void delete(int id) {
-        userDao.delete(id);
+        userRepository.deleteById(id);
     }
 
     private boolean isEmailUnique(String email) {
-        return userDao.getAll()
+        return userRepository.findAll()
                 .stream()
                 .map(User::getEmail)
                 .filter(email1 -> email1 != null)

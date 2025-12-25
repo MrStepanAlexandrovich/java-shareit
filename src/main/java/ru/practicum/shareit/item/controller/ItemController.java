@@ -7,7 +7,9 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import ru.practicum.shareit.item.dto.ItemDto;
 import ru.practicum.shareit.item.dto.ItemMapper;
+import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.item.service.ItemService;
+import ru.practicum.shareit.user.model.User;
 
 import java.util.List;
 
@@ -22,12 +24,14 @@ public class ItemController {
 
     @PostMapping
     public ResponseEntity<ItemDto> add(
-            @RequestBody @Valid ItemDto item,
+            @RequestBody @Valid ItemDto itemDto,
             @RequestHeader("X-Sharer-User-Id") int userId
     ) {
-        item.setOwner(userId);
+        Item item = ItemMapper.toItem(itemDto);
+        item.setOwner(new User());
+        item.getOwner().setId(userId);
         return new ResponseEntity<>(
-                ItemMapper.toItemDto(itemService.add(ItemMapper.toItem(item))),
+                ItemMapper.toItemDto(itemService.add(item)),
                 HttpStatus.CREATED
         );
     }
@@ -38,10 +42,13 @@ public class ItemController {
             @PathVariable int itemId,
             @RequestHeader("X-Sharer-User-Id") int userId
     ) {
+        Item item = ItemMapper.toItem(itemDto);
+        item.setOwner(new User());
+        item.getOwner().setId(userId);
         return new ResponseEntity<>(ItemMapper.toItemDto(
                 itemService.edit(
                         itemId,
-                        ItemMapper.toItem(itemDto),
+                        item,
                         userId
                 )),
                 HttpStatus.OK
