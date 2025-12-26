@@ -26,11 +26,11 @@ public class Item {
     @Column(name = "is_available")
     private Boolean isAvailable;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne
     @JoinColumn(name = "owner_id")
     private User owner;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne
     @JoinColumn(name = "request")
     private ItemRequest request;
 

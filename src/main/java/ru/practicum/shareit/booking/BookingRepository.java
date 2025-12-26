@@ -12,7 +12,7 @@ import java.util.Optional;
 @Repository
 public interface BookingRepository extends JpaRepository<Booking, Integer> {
     @Query("UPDATE Booking b SET b.status=:status WHERE b.id=:id")
-    @Modifying
+    @Modifying(clearAutomatically = true)
     void updateStatus(
             @Param("id") int id,
             @Param("status") Booking.Status status
@@ -22,4 +22,9 @@ public interface BookingRepository extends JpaRepository<Booking, Integer> {
     Optional<Booking> findBooking(@Param("id") int id);
 
     Collection<Booking> findByBookerIdAndStatus(int userId, Booking.Status status);
+
+    Collection<Booking> findByBookerId(int userId);
+
+    @Query("SELECT b FROM Booking b JOIN FETCH b.item WHERE b.status=:status and b.item.owner.id=:userId")
+    Collection<Booking> getUsersItemsThatBooked(@Param("status") int userId, @Param("status") Booking.Status status);
 }

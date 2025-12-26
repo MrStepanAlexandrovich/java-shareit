@@ -3,6 +3,8 @@ package ru.practicum.shareit.booking;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 import ru.practicum.shareit.booking.dto.BookingCreateDto;
+import ru.practicum.shareit.item.model.Item;
+import ru.practicum.shareit.user.model.User;
 
 import java.util.Collection;
 
@@ -24,13 +26,16 @@ public class BookingController {
         return bookingService.createBooking(bookingDto.toBooking());
     }
 
-    @PatchMapping("/bookings/{bookingId}")
-    public void bookingResponse(
+    @PatchMapping("/{bookingId}")
+    public Booking bookingResponse(
             @PathVariable int bookingId,
-            @RequestParam("approved") boolean isApproved
+            @RequestParam("approved") boolean isApproved,
+            @RequestHeader("X-Sharer-User-Id") int userId
     ) {
         Booking booking = new Booking();
         booking.setId(bookingId);
+        booking.setBooker(new User());
+        booking.getBooker().setId(userId);
 
         if (isApproved) {
             booking.setStatus(Booking.Status.APPROVED);
@@ -38,15 +43,15 @@ public class BookingController {
             booking.setStatus(Booking.Status.REJECTED);
         }
 
-        bookingService.response(booking);
+        return bookingService.response(booking);
     }
 
-    @GetMapping("/bookings/{bookingId}")
+    @GetMapping("/{bookingId}")
     public Booking getBooking(@PathVariable int bookingId) {
         return bookingService.getBooking(bookingId);
     }
 
-    @GetMapping ("/bookings")
+    @GetMapping
     public Collection<Booking> getBookingsOfUser(
             @RequestParam(value = "state", defaultValue = "ALL") Booking.Status status,
             @RequestHeader("X-Sharer-User-Id") int userId
@@ -54,11 +59,11 @@ public class BookingController {
         return bookingService.getBookingsOfUser(userId, status);
     }
 
-    @GetMapping("/bookings/owner")
-    public Collection<Booking> getBookedItemsOfUser(
+    @GetMapping("/owner")
+    public Collection<Item> getUsersItemsThatBooked(
             @RequestParam(value = "state", defaultValue = "ALL") Booking.Status status,
             @RequestHeader("X-Sharer-User-Id") int userId
     ) {
-        return bookingService.getBookedItemsOfUser(userId, status);
+        return bookingService.getUsersItemsThatBooked(userId, status);
     }
 }
