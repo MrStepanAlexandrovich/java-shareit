@@ -1,5 +1,6 @@
 package ru.practicum.shareit.item.service;
 
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import ru.practicum.shareit.booking.model.Booking;
@@ -92,6 +93,7 @@ public class ItemServiceImpl implements ItemService {
     }
 
     @Override
+    @Transactional
     public Comment addComment(Comment comment) {
         User user = userRepository.findById(comment.getAuthor().getId())
                 .orElseThrow(() -> new NotFoundException("User with id " + comment.getAuthor().getId()
