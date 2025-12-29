@@ -1,4 +1,4 @@
-package ru.practicum.shareit.booking;
+package ru.practicum.shareit.booking.model;
 
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -32,6 +32,8 @@ public class Booking {
     @OneToOne
     @JoinColumn(name = "booker_id")
     private User booker;
+
+    @Enumerated
     private Status status;
 
     public enum Status {

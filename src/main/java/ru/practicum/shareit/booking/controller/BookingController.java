@@ -1,8 +1,13 @@
-package ru.practicum.shareit.booking;
+package ru.practicum.shareit.booking.controller;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import ru.practicum.shareit.booking.model.Booking;
 import ru.practicum.shareit.booking.dto.BookingCreateDto;
+import ru.practicum.shareit.booking.dto.BookingMapper;
+import ru.practicum.shareit.booking.service.BookingService;
 import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.user.model.User;
 
@@ -18,16 +23,19 @@ public class BookingController {
     private final BookingService bookingService;
 
     @PostMapping
-    public Booking bookItem(
+    public ResponseEntity<Booking> bookItem(
             @RequestHeader("X-Sharer-User-Id") int userId,
-            @RequestBody BookingCreateDto bookingDto) {
-        bookingDto.setUserId(userId);
+            @RequestBody BookingCreateDto bookingCreateDto) {
+        bookingCreateDto.setUserId(userId);
 
-        return bookingService.createBooking(bookingDto.toBooking());
+        return new ResponseEntity<>(
+                bookingService.createBooking(BookingMapper.toBooking(bookingCreateDto)),
+                HttpStatus.OK
+        );
     }
 
     @PatchMapping("/{bookingId}")
-    public Booking bookingResponse(
+    public ResponseEntity<Booking> bookingResponse(
             @PathVariable int bookingId,
             @RequestParam("approved") boolean isApproved,
             @RequestHeader("X-Sharer-User-Id") int userId
@@ -43,27 +51,39 @@ public class BookingController {
             booking.setStatus(Booking.Status.REJECTED);
         }
 
-        return bookingService.response(booking);
+        return new ResponseEntity<>(
+                bookingService.response(booking),
+                HttpStatus.OK
+        );
     }
 
     @GetMapping("/{bookingId}")
-    public Booking getBooking(@PathVariable int bookingId) {
-        return bookingService.getBooking(bookingId);
+    public ResponseEntity<Booking> getBooking(@PathVariable int bookingId) {
+        return new ResponseEntity<>(
+                bookingService.getBooking(bookingId),
+                HttpStatus.OK
+        );
     }
 
     @GetMapping
-    public Collection<Booking> getBookingsOfUser(
+    public ResponseEntity<Collection<Booking>> getBookingsOfUser(
             @RequestParam(value = "state", defaultValue = "ALL") Booking.Status status,
             @RequestHeader("X-Sharer-User-Id") int userId
     ) {
-        return bookingService.getBookingsOfUser(userId, status);
+        return new ResponseEntity<>(
+                bookingService.getBookingsOfUser(userId, status),
+                HttpStatus.OK
+        );
     }
 
     @GetMapping("/owner")
-    public Collection<Item> getUsersItemsThatBooked(
+    public ResponseEntity<Collection<Item>> getUsersItemsThatBooked(
             @RequestParam(value = "state", defaultValue = "ALL") Booking.Status status,
             @RequestHeader("X-Sharer-User-Id") int userId
     ) {
-        return bookingService.getUsersItemsThatBooked(userId, status);
+        return new ResponseEntity<>(
+                bookingService.getUsersItemsThatBooked(userId, status),
+                HttpStatus.OK
+        );
     }
 }

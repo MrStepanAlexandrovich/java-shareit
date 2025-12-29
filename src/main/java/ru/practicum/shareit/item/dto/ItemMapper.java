@@ -1,6 +1,5 @@
 package ru.practicum.shareit.item.dto;
 
-import org.apache.catalina.User;
 import ru.practicum.shareit.item.model.Item;
 
 public class ItemMapper {
@@ -11,7 +10,8 @@ public class ItemMapper {
                 item.getDescription(),
                 item.getIsAvailable(),
                 (item.getOwner() != null) ? item.getOwner().getId() : null,
-                null
+                null,
+                item.getCommentList()
         );
     }
 
@@ -21,6 +21,7 @@ public class ItemMapper {
                 itemDto.getName(),
                 itemDto.getDescription(),
                 itemDto.getAvailable(),
+                null,
                 null,
                 null
         );

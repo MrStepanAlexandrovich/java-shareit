@@ -1,10 +1,11 @@
-package ru.practicum.shareit.booking;
+package ru.practicum.shareit.booking.service;
 
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import ru.practicum.shareit.booking.model.Booking;
+import ru.practicum.shareit.booking.dao.BookingRepository;
 import ru.practicum.shareit.exception.BadRequestException;
-import ru.practicum.shareit.exception.ConflictException;
 import ru.practicum.shareit.exception.ForbiddenException;
 import ru.practicum.shareit.exception.NotFoundException;
 import ru.practicum.shareit.item.dao.ItemRepository;
@@ -14,16 +15,16 @@ import ru.practicum.shareit.user.model.User;
 
 import java.time.LocalDateTime;
 import java.util.Collection;
-import java.util.List;
 
 @Service
 @Transactional
 @RequiredArgsConstructor
-public class BookingService {
+public class BookingServiceImpl implements BookingService {
     private final BookingRepository bookingRepository;
     private final ItemRepository itemRepository;
     private final UserRepository userRepository;
 
+    @Override
     public Booking createBooking(Booking booking) {
         booking.setStatus(Booking.Status.WAITING);
 
@@ -55,6 +56,7 @@ public class BookingService {
         return booking;
     }
 
+    @Override
     public Booking response(Booking booking) {
         Booking booking1 = bookingRepository.findBooking(booking.getId())
                 .orElseThrow(() -> new NotFoundException("Booking with id = " + booking.getId() + " wasn't found"));
@@ -69,20 +71,21 @@ public class BookingService {
         return bookingRepository.findBooking(booking.getId()).orElseThrow(() -> new NotFoundException("Not found"));
     }
 
+    @Override
     public Booking getBooking(int bookingId) {
         return bookingRepository.findBooking(bookingId)
                 .orElseThrow(() -> new NotFoundException("Booking with id = " + bookingId + " wasn't found"));
     }
 
-    public Collection<Item> getUsersItemsThatBooked(
-            int userId,
-            Booking.Status status) {
+    @Override
+    public Collection<Item> getUsersItemsThatBooked(int userId, Booking.Status status) {
         return bookingRepository.getUsersItemsThatBooked(userId, status)
                 .stream()
                 .map(Booking::getItem)
                 .toList();
     }
 
+    @Override
     public Collection<Booking> getBookingsOfUser(int userId, Booking.Status status) {
         if (status.equals(Booking.Status.ALL)) {
             return bookingRepository.findByBookerId(userId);
