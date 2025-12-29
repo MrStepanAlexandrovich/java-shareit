@@ -34,6 +34,7 @@ public class UserServiceImpl implements UserService {
         }
     }
 
+    @Transactional
     @Override
     public User edit(int id, User user) {
         user.setId(id);
