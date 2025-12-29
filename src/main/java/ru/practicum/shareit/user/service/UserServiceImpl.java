@@ -38,6 +38,13 @@ public class UserServiceImpl implements UserService {
     @Override
     public User edit(int id, User user) {
         user.setId(id);
+        User oldUser = userRepository.findById(id).orElseThrow(() -> new NotFoundException("User with ID = "
+                + id + " wasn't found"));
+
+        if (user.getName() == null) {
+            user.setName(oldUser.getName());
+        }
+
         if (isEmailUnique(user.getEmail())) {
             return  userRepository.save(user);
         } else {
