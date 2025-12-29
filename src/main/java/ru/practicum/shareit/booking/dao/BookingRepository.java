@@ -7,6 +7,7 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 import ru.practicum.shareit.booking.model.Booking;
 
+import java.time.LocalDateTime;
 import java.util.Collection;
 import java.util.Optional;
 
@@ -28,4 +29,14 @@ public interface BookingRepository extends JpaRepository<Booking, Integer> {
 
     @Query("SELECT b FROM Booking b JOIN FETCH b.item WHERE b.status=:status and b.item.owner.id=:userId")
     Collection<Booking> getUsersItemsThatBooked(@Param("status") int userId, @Param("status") Booking.Status status);
+
+    @Query("SELECT b FROM Booking b JOIN FETCH b.item WHERE b.end <= :now " +
+            "and b.item.id=:itemId ORDER BY b.end DESC LIMIT 1")
+    Optional<Booking> findLastBooking(@Param("now")LocalDateTime now,
+                                      @Param("itemId")int itemId);
+
+    @Query("SELECT b FROM Booking b JOIN FETCH b.item WHERE b.start >= :now " +
+            "and b.item.id=:itemId ORDER BY b.start ASC LIMIT 1")
+    Optional<Booking> findNextBooking(@Param("now")LocalDateTime now,
+                                      @Param("itemId")int itemId);
 }

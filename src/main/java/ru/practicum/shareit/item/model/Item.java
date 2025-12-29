@@ -38,7 +38,7 @@ public class Item {
 
     @OneToMany
     @JoinColumn(name = "item_id")
-    private List<Comment> commentList;
+    private List<Comment> comments;
 
     public Item(
             String name,

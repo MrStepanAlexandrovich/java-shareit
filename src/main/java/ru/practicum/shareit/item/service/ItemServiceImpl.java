@@ -4,16 +4,18 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import ru.practicum.shareit.booking.model.Booking;
 import ru.practicum.shareit.booking.dao.BookingRepository;
+import ru.practicum.shareit.exception.BadRequestException;
 import ru.practicum.shareit.exception.ForbiddenException;
 import ru.practicum.shareit.exception.NotFoundException;
 import ru.practicum.shareit.item.dao.CommentRepository;
 import ru.practicum.shareit.item.dao.ItemRepository;
+import ru.practicum.shareit.item.dto.ItemMapper;
+import ru.practicum.shareit.item.dto.ItemWithBookingsDto;
 import ru.practicum.shareit.item.model.Comment;
 import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.user.dao.UserRepository;
 import ru.practicum.shareit.user.model.User;
 
-import java.time.LocalDateTime;
 import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
@@ -57,10 +59,12 @@ public class ItemServiceImpl implements ItemService {
     }
 
     @Override
-    public Item get(int id) {
+    public ItemWithBookingsDto get(int id) {
         Optional<Item> itemOptional = itemRepository.findById(id);
         if (itemOptional.isPresent()) {
-            return itemOptional.get();
+            ItemWithBookingsDto itemDto = ItemMapper.toItemWithBookingsDto(itemOptional.get());
+
+            return itemDto;
         } else {
             throw new NotFoundException("item with id = " + id + " wasn't found");
         }
@@ -89,7 +93,6 @@ public class ItemServiceImpl implements ItemService {
 
     @Override
     public Comment addComment(Comment comment) {
-        comment.setCreated(LocalDateTime.now());
         User user = userRepository.findById(comment.getAuthor().getId())
                 .orElseThrow(() -> new NotFoundException("User with id " + comment.getAuthor().getId()
                         + " wasn't found"));
@@ -104,6 +107,10 @@ public class ItemServiceImpl implements ItemService {
                 .findAny()
                 .orElseThrow(() -> new NotFoundException("User with id = " + comment.getAuthor().getId()
                         + " didn't book item with id " + comment.getItem().getId()));
+
+        if (booking1.getEnd().isAfter(comment.getCreated()) || booking1.getEnd().equals(comment.getCreated())) {
+            throw new BadRequestException("Users can't add comments before ending of booking");
+        }
 
         comment.setItem(booking1.getItem());
 

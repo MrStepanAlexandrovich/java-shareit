@@ -3,6 +3,9 @@ package ru.practicum.shareit.booking.dto;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import ru.practicum.shareit.booking.model.Booking;
+import ru.practicum.shareit.item.dto.ItemDto;
+import ru.practicum.shareit.user.dto.UserDto;
 
 import java.time.LocalDateTime;
 
@@ -15,8 +18,9 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 public class BookingDto {
     private Integer bookingId;
-    private Integer userId;
-    private Integer itemId;
+    private UserDto user;
+    private ItemDto item;
     private LocalDateTime start;
-    private Boolean isApproved;
+    private LocalDateTime end;
+    private Booking.Status approved;
 }

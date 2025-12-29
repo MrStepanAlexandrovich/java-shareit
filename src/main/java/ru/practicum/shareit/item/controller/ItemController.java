@@ -5,13 +5,13 @@ import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import ru.practicum.shareit.item.dto.ItemDto;
-import ru.practicum.shareit.item.dto.ItemMapper;
+import ru.practicum.shareit.item.dto.*;
 import ru.practicum.shareit.item.model.Comment;
 import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.item.service.ItemService;
 import ru.practicum.shareit.user.model.User;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 /**
@@ -57,22 +57,22 @@ public class ItemController {
     }
 
     @GetMapping("/{itemId}")
-    public ResponseEntity<ItemDto> getItem(
+    public ResponseEntity<ItemWithBookingsDto> getItem(
             @PathVariable int itemId,
             @RequestHeader("X-Sharer-User-Id") int userId
     ) {
         return new ResponseEntity<>(
-                ItemMapper.toItemDto(itemService.get(itemId)),
+                itemService.get(itemId),
                 HttpStatus.OK
         );
     }
 
     @GetMapping
-    public ResponseEntity<List<ItemDto>> getItems(@RequestHeader("X-Sharer-User-Id") int userId) {
+    public ResponseEntity<List<ItemWithBookingsDto>> getItems(@RequestHeader("X-Sharer-User-Id") int userId) {
         return new ResponseEntity<>(
                 itemService.getAll(userId)
                         .stream()
-                        .map(ItemMapper::toItemDto)
+                        .map(ItemMapper::toItemWithBookingsDto)
                         .toList(),
                 HttpStatus.OK
         );
@@ -93,20 +93,19 @@ public class ItemController {
     }
 
     @PostMapping("/{itemId}/comment")
-    public ResponseEntity<Comment> addComment(
+    public ResponseEntity<CommentDto> addComment(
             @PathVariable int itemId,
             @RequestHeader("X-Sharer-User-Id") int userId,
-            @RequestBody String text
+            @RequestBody Comment comment
     ) {
-        Comment comment = new Comment();
         comment.setAuthor(new User());
         comment.getAuthor().setId(userId);
-        comment.setText(text);
         comment.setItem(new Item());
         comment.getItem().setId(itemId);
+        comment.setCreated(LocalDateTime.now());
 
         return new ResponseEntity<>(
-                itemService.addComment(comment),
+                CommentMapper.toCommentDto(itemService.addComment(comment)),
                 HttpStatus.OK
         );
     }

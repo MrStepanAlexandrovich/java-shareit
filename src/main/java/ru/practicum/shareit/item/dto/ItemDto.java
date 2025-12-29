@@ -4,8 +4,7 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Data;
-import ru.practicum.shareit.item.model.Comment;
-
+import lombok.NoArgsConstructor;
 import java.util.List;
 
 /**
@@ -13,6 +12,7 @@ import java.util.List;
  */
 @Data
 @AllArgsConstructor
+@NoArgsConstructor
 public class ItemDto {
     private int id;
 
@@ -26,5 +26,5 @@ public class ItemDto {
     private Boolean available;
     private Integer owner;
     private Integer request;
-    private List<Comment> commentList;
+    private List<CommentDto> comments;
 }
