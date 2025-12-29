@@ -7,7 +7,7 @@ import java.time.LocalDate;
 
 @Data
 @NoArgsConstructor
-public class ItemWithBookingsDto extends ItemDto{
+public class ItemWithBookingsDto extends ItemDto {
     private LocalDate lastBooking;
     private LocalDate nextBooking;
 }
