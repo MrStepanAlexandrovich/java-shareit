@@ -36,10 +36,6 @@ public class Item {
     @JoinColumn(name = "request")
     private ItemRequest request;
 
-    @OneToMany
-    @JoinColumn(name = "item_id")
-    private List<Comment> comments;
-
     public Item(
             String name,
             String description,
