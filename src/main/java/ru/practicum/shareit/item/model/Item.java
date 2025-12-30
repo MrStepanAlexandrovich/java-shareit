@@ -7,8 +7,6 @@ import lombok.NoArgsConstructor;
 import ru.practicum.shareit.request.ItemRequest;
 import ru.practicum.shareit.user.model.User;
 
-import java.util.List;
-
 /**
  * TODO Sprint add-controllers.
  */
