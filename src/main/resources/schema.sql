@@ -45,5 +45,5 @@ CREATE TABLE IF NOT EXISTS comment
     text  VARCHAR(2000) NOT NULL,
     created      TIMESTAMP     NOT NULL,
     FOREIGN KEY (author_id) REFERENCES "user" (id),
-    FOREIGN KEY (item_id) REFERENCES Item (id)
+    FOREIGN KEY (item_id) REFERENCES item (id)
 )
