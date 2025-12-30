@@ -33,10 +33,6 @@ public class BookingServiceImpl implements BookingService {
                         + " wasn't found"));
         booking.setBooker(user);
 
-        if (booking.getStart().isBefore(LocalDateTime.now())) {
-            throw new BadRequestException("Booking cannot be created in the past");
-        }
-
         if (booking.getStart().isAfter(booking.getEnd()) || booking.getStart().equals(booking.getEnd())) {
             throw new BadRequestException("End time should be after begin time");
         }
