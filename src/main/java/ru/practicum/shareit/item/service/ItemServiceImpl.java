@@ -5,6 +5,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import ru.practicum.shareit.booking.model.Booking;
 import ru.practicum.shareit.booking.dao.BookingRepository;
+import ru.practicum.shareit.exception.BadRequestException;
 import ru.practicum.shareit.exception.ForbiddenException;
 import ru.practicum.shareit.exception.NotFoundException;
 import ru.practicum.shareit.item.dao.CommentRepository;
@@ -109,9 +110,9 @@ public class ItemServiceImpl implements ItemService {
                 .orElseThrow(() -> new NotFoundException("User with id = " + comment.getAuthor().getId()
                         + " didn't book item with id " + comment.getItem().getId()));
 
-        /*if (booking1.getEnd().isAfter(comment.getCreated())) {
+        if (booking1.getEnd().isAfter(comment.getCreated())) {
             throw new BadRequestException("Users can't add comments before ending of booking");
-        }*/
+        }
 
         comment.setItem(booking1.getItem());
 
