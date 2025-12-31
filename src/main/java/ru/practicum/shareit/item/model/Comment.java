@@ -10,6 +10,7 @@ import java.time.LocalDateTime;
 @Entity
 @Data
 @NoArgsConstructor
+@Table(name = "\"comment\"")
 public class Comment {
     @Id
     @GeneratedValue
