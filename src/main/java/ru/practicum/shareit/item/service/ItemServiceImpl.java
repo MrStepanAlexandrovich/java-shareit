@@ -110,7 +110,7 @@ public class ItemServiceImpl implements ItemService {
                 .orElseThrow(() -> new NotFoundException("User with id = " + comment.getAuthor().getId()
                         + " didn't book item with id " + comment.getItem().getId()));
 
-        if (booking1.getEnd().isAfter(comment.getCreated()) || booking1.getEnd().equals(comment.getCreated())) {
+        if (booking1.getEnd().isAfter(comment.getCreated())) {
             throw new BadRequestException("Users can't add comments before ending of booking");
         }
 
