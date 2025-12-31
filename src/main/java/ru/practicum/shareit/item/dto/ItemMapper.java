@@ -36,6 +36,12 @@ public class ItemMapper {
         itemWithBookingsDto.setAvailable(item.getIsAvailable());
         itemWithBookingsDto.setOwner(item.getOwner().getId());
         itemWithBookingsDto.setRequest(null);
+        itemWithBookingsDto.setComments(
+                item.getComments()
+                        .stream()
+                        .map(CommentMapper::toCommentDto)
+                        .toList()
+        );
 
         return itemWithBookingsDto;
     }

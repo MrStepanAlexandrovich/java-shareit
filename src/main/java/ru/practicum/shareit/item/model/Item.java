@@ -7,6 +7,8 @@ import lombok.NoArgsConstructor;
 import ru.practicum.shareit.request.ItemRequest;
 import ru.practicum.shareit.user.model.User;
 
+import java.util.List;
+
 /**
  * TODO Sprint add-controllers.
  */
@@ -34,6 +36,9 @@ public class Item {
     @JoinColumn(name = "request")
     private ItemRequest request;
 
+    @OneToMany
+    @JoinColumn(name = "item_id")
+    private List<Comment> comments;
 
     public Item(
             String name,
