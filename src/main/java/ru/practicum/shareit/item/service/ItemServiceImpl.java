@@ -5,6 +5,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import ru.practicum.shareit.booking.model.Booking;
 import ru.practicum.shareit.booking.dao.BookingRepository;
+import ru.practicum.shareit.booking.model.Status;
 import ru.practicum.shareit.exception.BadRequestException;
 import ru.practicum.shareit.exception.ForbiddenException;
 import ru.practicum.shareit.exception.NotFoundException;
@@ -102,7 +103,7 @@ public class ItemServiceImpl implements ItemService {
         comment.setAuthor(user);
 
         Collection<Booking> bookingsOfUser = bookingRepository.findByBookerIdAndStatus(comment.getAuthor().getId(),
-                Booking.Status.APPROVED);
+                Status.APPROVED);
 
         Booking booking1 = bookingsOfUser.stream()
                 .filter(booking -> booking.getItem().getId() == comment.getItem().getId())

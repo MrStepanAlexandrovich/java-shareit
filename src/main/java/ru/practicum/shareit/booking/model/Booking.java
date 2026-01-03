@@ -1,20 +1,16 @@
 package ru.practicum.shareit.booking.model;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.user.model.User;
 
 import java.time.LocalDateTime;
 
-/**
- * TODO Sprint add-bookings.
- */
 @NoArgsConstructor
 @Entity
-@Data
+@Getter
+@Setter
 @AllArgsConstructor
 public class Booking {
     @Id
@@ -36,11 +32,4 @@ public class Booking {
     @Enumerated(EnumType.STRING)
     private Status status;
 
-    public enum Status {
-        ALL,
-        APPROVED,
-        WAITING,
-        REJECTED,
-        CANCELED
-    }
 }

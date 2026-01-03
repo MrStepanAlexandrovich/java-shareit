@@ -6,6 +6,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 import ru.practicum.shareit.booking.model.Booking;
+import ru.practicum.shareit.booking.model.Status;
 
 import java.time.LocalDateTime;
 import java.util.Collection;
@@ -17,18 +18,18 @@ public interface BookingRepository extends JpaRepository<Booking, Integer> {
     @Modifying(clearAutomatically = true)
     void updateStatus(
             @Param("id") int id,
-            @Param("status") Booking.Status status
+            @Param("status") Status status
     );
 
     @Query("SELECT b FROM Booking b JOIN FETCH b.booker JOIN FETCH b.item WHERE b.id=:id")
     Optional<Booking> findBooking(@Param("id") int id);
 
-    Collection<Booking> findByBookerIdAndStatus(int userId, Booking.Status status);
+    Collection<Booking> findByBookerIdAndStatus(int userId, Status status);
 
     Collection<Booking> findByBookerId(int userId);
 
     @Query("SELECT b FROM Booking b JOIN FETCH b.item WHERE b.status=:status and b.item.owner.id=:userId")
-    Collection<Booking> getUsersItemsThatBooked(@Param("status") int userId, @Param("status") Booking.Status status);
+    Collection<Booking> getUsersItemsThatBooked(@Param("status") int userId, @Param("status") Status status);
 
     @Query("SELECT b FROM Booking b JOIN FETCH b.item WHERE b.end <= :now " +
             "and b.item.id=:itemId ORDER BY b.end DESC LIMIT 1")
