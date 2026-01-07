@@ -11,13 +11,13 @@ import ru.practicum.shareit.exception.ForbiddenException;
 import ru.practicum.shareit.exception.NotFoundException;
 import ru.practicum.shareit.item.dao.CommentRepository;
 import ru.practicum.shareit.item.dao.ItemRepository;
-import ru.practicum.shareit.item.dto.ItemMapper;
-import ru.practicum.shareit.item.dto.ItemWithBookingsDto;
+import ru.practicum.shareit.item.dto.*;
 import ru.practicum.shareit.item.model.Comment;
 import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.user.dao.UserRepository;
 import ru.practicum.shareit.user.model.User;
 
+import java.time.LocalDateTime;
 import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
@@ -31,14 +31,15 @@ public class ItemServiceImpl implements ItemService {
     private final BookingRepository bookingRepository;
 
     @Override
-    public Item edit(
+    public ItemDto edit(
             int itemId,
-            Item newItem,
+            ItemDto itemDto,
             int userId
     ) {
+        Item newItem = ItemMapper.toItem(itemDto);
         checkUser(userId, itemId);
 
-        Optional<Item> itemOptional = itemRepository.findById((long) itemId);
+        Optional<Item> itemOptional = itemRepository.findById(itemId);
         Item item;
 
         if (itemOptional.isEmpty()) {
@@ -57,7 +58,7 @@ public class ItemServiceImpl implements ItemService {
             }
         }
 
-        return itemRepository.save(item);
+        return ItemMapper.toItemDto(itemRepository.save(item));
     }
 
     @Override
@@ -73,51 +74,62 @@ public class ItemServiceImpl implements ItemService {
     }
 
     @Override
-    public Collection<Item> search(String description) {
+    public Collection<ItemDto> search(String description) {
         if (description.isBlank()) {
             return List.of();
         } else {
             return itemRepository
-                    .findByNameContainingIgnoreCaseAndIsAvailableTrueOrDescriptionContainingIgnoreCaseAndIsAvailableTrue(description, description);
+                    .findByNameContainingIgnoreCaseAndIsAvailableTrueOrDescriptionContainingIgnoreCaseAndIsAvailableTrue(description, description)
+                    .stream()
+                    .map(ItemMapper::toItemDto)
+                    .toList();
         }
     }
 
     @Override
-    public Collection<Item> getAll(int id) {
-        return itemRepository.findByOwnerId(id);
+    public Collection<ItemDto> getAll(int id) {
+        return itemRepository.findByOwnerId(id)
+                .stream()
+                .map(ItemMapper::toItemDto)
+                .toList();
     }
 
     @Override
-    public Item add(Item item) {
+    public ItemDto add(ItemDto itemDto, int userId) {
+        Item item = ItemMapper.toItem(itemDto);
+        item.setOwner(new User());
+        item.getOwner().setId(userId);
         validate(item);
-        return itemRepository.save(item);
+
+        return ItemMapper.toItemDto(itemRepository.save(item));
     }
 
     @Override
     @Transactional
-    public Comment addComment(Comment comment) {
-        User user = userRepository.findById(comment.getAuthor().getId())
-                .orElseThrow(() -> new NotFoundException("User with id " + comment.getAuthor().getId()
-                        + " wasn't found"));
+    public CommentDto addComment(CommentDto commentDto, int userId, int itemId) {
+        Comment comment = new Comment();
+        comment.setCreated(LocalDateTime.now());
+        comment.setText(commentDto.getText());
 
-        comment.setAuthor(user);
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new NotFoundException("User with id " + userId + " wasn't found"));
 
-        Collection<Booking> bookingsOfUser = bookingRepository.findByBookerIdAndStatus(comment.getAuthor().getId(),
-                Status.APPROVED);
+        Collection<Booking> bookingsOfUser = bookingRepository.findByBookerIdAndStatus(userId, Status.APPROVED);
 
         Booking booking1 = bookingsOfUser.stream()
-                .filter(booking -> booking.getItem().getId() == comment.getItem().getId())
+                .filter(booking -> booking.getItem().getId() == itemId)
                 .findAny()
-                .orElseThrow(() -> new NotFoundException("User with id = " + comment.getAuthor().getId()
-                        + " didn't book item with id " + comment.getItem().getId()));
+                .orElseThrow(() -> new NotFoundException("User with id = " + userId
+                        + " didn't book item with id " + itemId));
 
         if (booking1.getEnd().isAfter(comment.getCreated())) {
             throw new BadRequestException("Users can't add comments before ending of booking");
         }
 
-        comment.setItem(booking1.getItem());
+        comment.setItem(booking1.getItem());;
+        comment.setAuthor(user);
 
-        return commentRepository.save(comment);
+        return CommentMapper.toCommentDto(commentRepository.save(comment));
     }
 
     public List<Comment> getCommentsForItem(int itemId) {

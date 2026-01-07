@@ -21,12 +21,12 @@ public class BookingMapper {
 
     public static BookingDto toBookingDto(Booking booking) {
         BookingDto bookingDto = new BookingDto();
-        bookingDto.setBookingId(booking.getId());
+        bookingDto.setId(booking.getId());
         bookingDto.setItem(ItemMapper.toItemDto(booking.getItem()));
         bookingDto.setStart(booking.getStart());
-        bookingDto.setUser(UserMapper.toUserDto(booking.getBooker()));
+        bookingDto.setBooker(UserMapper.toUserDto(booking.getBooker()));
         bookingDto.setEnd(booking.getEnd());
-        bookingDto.setApproved(booking.getStatus());
+        bookingDto.setStatus(booking.getStatus());
 
         return bookingDto;
     }

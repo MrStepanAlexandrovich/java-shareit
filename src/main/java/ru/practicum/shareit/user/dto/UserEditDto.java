@@ -1,14 +1,16 @@
 package ru.practicum.shareit.user.dto;
 
-import lombok.AllArgsConstructor;
+import jakarta.validation.constraints.Email;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @Data
 @NoArgsConstructor
-@AllArgsConstructor
-public class UserDto {
+public class UserEditDto {
     private int id;
     private String name;
+
+    @Email
     private String email;
+
 }

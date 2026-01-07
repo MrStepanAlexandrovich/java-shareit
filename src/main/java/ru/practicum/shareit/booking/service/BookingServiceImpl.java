@@ -31,7 +31,7 @@ public class BookingServiceImpl implements BookingService {
 
     @Override
     public BookingDto createBooking(BookingCreateDto bookingCreateDto) {
-        Booking booking= BookingMapper.toBooking(bookingCreateDto);
+        Booking booking = BookingMapper.toBooking(bookingCreateDto);
 
         booking.setStatus(Status.WAITING);
 
@@ -61,7 +61,8 @@ public class BookingServiceImpl implements BookingService {
 
     @Override
     public BookingDto approveBooking(int userId, int bookingId, boolean isApproved) {
-
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new NotFoundException("User with id = " + userId + " wasn't found"));
         Booking booking1 = bookingRepository.findBooking(bookingId)
                 .orElseThrow(() -> new NotFoundException("Booking with id = " + bookingId + " wasn't found"));
 

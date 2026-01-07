@@ -12,11 +12,9 @@ import ru.practicum.shareit.item.service.ItemService;
 import ru.practicum.shareit.user.model.User;
 
 import java.time.LocalDateTime;
+import java.util.Collection;
 import java.util.List;
 
-/**
- * TODO Sprint add-controllers.
- */
 @RestController
 @RequestMapping("/items")
 @AllArgsConstructor
@@ -28,11 +26,8 @@ public class ItemController {
             @RequestBody @Valid ItemDto itemDto,
             @RequestHeader("X-Sharer-User-Id") int userId
     ) {
-        Item item = ItemMapper.toItem(itemDto);
-        item.setOwner(new User());
-        item.getOwner().setId(userId);
         return new ResponseEntity<>(
-                ItemMapper.toItemDto(itemService.add(item)),
+                itemService.add(itemDto, userId),
                 HttpStatus.CREATED
         );
     }
@@ -43,15 +38,8 @@ public class ItemController {
             @PathVariable int itemId,
             @RequestHeader("X-Sharer-User-Id") int userId
     ) {
-        Item item = ItemMapper.toItem(itemDto);
-        item.setOwner(new User());
-        item.getOwner().setId(userId);
-        return new ResponseEntity<>(ItemMapper.toItemDto(
-                itemService.edit(
-                        itemId,
-                        item,
-                        userId
-                )),
+        return new ResponseEntity<>(
+                itemService.edit(itemId, itemDto, userId),
                 HttpStatus.OK
         );
     }
@@ -68,26 +56,20 @@ public class ItemController {
     }
 
     @GetMapping
-    public ResponseEntity<List<ItemWithBookingsDto>> getItems(@RequestHeader("X-Sharer-User-Id") int userId) {
+    public ResponseEntity<Collection<ItemDto>> getItems(@RequestHeader("X-Sharer-User-Id") int userId) {
         return new ResponseEntity<>(
-                itemService.getAll(userId)
-                        .stream()
-                        .map(ItemMapper::toItemWithBookingsDto)
-                        .toList(),
+                itemService.getAll(userId),
                 HttpStatus.OK
         );
     }
 
     @GetMapping("/search")
-    public ResponseEntity<List<ItemDto>> search(
+    public ResponseEntity<Collection<ItemDto>> search(
             @RequestParam("text") String text,
             @RequestHeader("X-Sharer-User-Id") int userId
     ) {
         return new ResponseEntity<>(
-                itemService.search(text)
-                        .stream()
-                        .map(ItemMapper::toItemDto)
-                        .toList(),
+                itemService.search(text),
                 HttpStatus.OK
         );
     }
@@ -96,16 +78,10 @@ public class ItemController {
     public ResponseEntity<CommentDto> addComment(
             @PathVariable int itemId,
             @RequestHeader("X-Sharer-User-Id") int userId,
-            @RequestBody Comment comment
+            @RequestBody CommentDto commentDto
     ) {
-        comment.setAuthor(new User());
-        comment.getAuthor().setId(userId);
-        comment.setItem(new Item());
-        comment.getItem().setId(itemId);
-        comment.setCreated(LocalDateTime.now());
-
         return new ResponseEntity<>(
-                CommentMapper.toCommentDto(itemService.addComment(comment)),
+                itemService.addComment(commentDto, userId, itemId),
                 HttpStatus.OK
         );
     }

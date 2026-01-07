@@ -6,6 +6,10 @@ import org.springframework.stereotype.Service;
 import ru.practicum.shareit.exception.ConflictException;
 import ru.practicum.shareit.exception.NotFoundException;
 import ru.practicum.shareit.user.dao.UserRepository;
+import ru.practicum.shareit.user.dto.UserCreateDto;
+import ru.practicum.shareit.user.dto.UserDto;
+import ru.practicum.shareit.user.dto.UserEditDto;
+import ru.practicum.shareit.user.dto.UserMapper;
 import ru.practicum.shareit.user.model.User;
 
 import java.util.Optional;
@@ -16,19 +20,21 @@ public class UserServiceImpl implements UserService {
     private final UserRepository userRepository;
 
     @Override
-    public User add(User user) {
+    public UserDto add(UserCreateDto userDto) {
+        User user = UserMapper.toUser(userDto);
+
         if (isEmailUnique(user.getEmail())) {
-            return userRepository.save(user);
+            return UserMapper.toUserDto(userRepository.save(user));
         } else {
             throw new ConflictException("Email is not unique");
         }
     }
 
     @Override
-    public User get(int id) {
+    public UserDto get(int id) {
         Optional<User> userOptional = userRepository.findById(id);
         if (userOptional.isPresent()) {
-            return userOptional.get();
+            return UserMapper.toUserDto(userOptional.get());
         } else {
             throw new NotFoundException("User with id = " + id + " wasn't found");
         }
@@ -36,7 +42,9 @@ public class UserServiceImpl implements UserService {
 
     @Transactional
     @Override
-    public User edit(int id, User user) {
+    public UserDto edit(int id, UserEditDto userEditDto) {
+        User user = UserMapper.toUser(userEditDto);
+
         user.setId(id);
         User oldUser = userRepository.findById(id).orElseThrow(() -> new NotFoundException("User with ID = "
                 + id + " wasn't found"));
@@ -46,7 +54,7 @@ public class UserServiceImpl implements UserService {
         }
 
         if (isEmailUnique(user.getEmail())) {
-            return  userRepository.save(user);
+            return  UserMapper.toUserDto(userRepository.save(user));
         } else {
             throw new ConflictException("Email is not unique");
         }

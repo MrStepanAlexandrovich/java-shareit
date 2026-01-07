@@ -18,4 +18,20 @@ public class UserMapper {
                 userDto.getEmail()
         );
     }
+
+    public static User toUser(UserEditDto user) {
+        return new User(
+                user.getId(),
+                user.getName(),
+                user.getEmail()
+        );
+    }
+
+    public static User toUser(UserCreateDto user) {
+        return new User(
+                user.getId(),
+                user.getName(),
+                user.getEmail()
+        );
+    }
 }
