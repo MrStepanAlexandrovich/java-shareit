@@ -1,5 +1,6 @@
 package ru.practicum.shareit.booking.dao;
 
+import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
@@ -26,7 +27,12 @@ public interface BookingRepository extends JpaRepository<Booking, Integer> {
 
     Collection<Booking> findByBookerIdAndStatus(int userId, Status status);
 
+    Collection<Booking> findByBookerIdAndStatus(int userId, Status status, Sort sort);
+
+
     Collection<Booking> findByBookerId(int userId);
+
+    Collection<Booking> findByBookerId(int userId, Sort sort);
 
     @Query("SELECT b FROM Booking b JOIN FETCH b.item WHERE b.status=:status and b.item.owner.id=:userId")
     Collection<Booking> getUsersItemsThatBooked(@Param("status") int userId, @Param("status") Status status);
@@ -40,4 +46,9 @@ public interface BookingRepository extends JpaRepository<Booking, Integer> {
             "and b.item.id=:itemId ORDER BY b.start ASC LIMIT 1")
     Optional<Booking> findNextBooking(@Param("now")LocalDateTime now,
                                       @Param("itemId")int itemId);
+
+    Collection<Booking> findByBookerIdAndEndIsBefore(int userId, LocalDateTime dateTime, Sort sort);
+
+    Collection<Booking> findByBookerIdAndStartIsAfter(int userId, LocalDateTime dateTime, Sort sort);
+
 }

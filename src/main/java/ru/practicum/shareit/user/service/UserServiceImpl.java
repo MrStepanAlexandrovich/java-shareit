@@ -51,7 +51,10 @@ public class UserServiceImpl implements UserService {
 
         if (user.getName() == null) {
             user.setName(oldUser.getName());
+        } else if (user.getEmail() == null) {
+            user.setEmail(oldUser.getEmail());
         }
+
 
         if (isEmailUnique(user.getEmail())) {
             return  UserMapper.toUserDto(userRepository.save(user));

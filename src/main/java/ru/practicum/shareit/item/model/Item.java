@@ -30,22 +30,10 @@ public class Item {
     private User owner;
 
     @ManyToOne
-    @JoinColumn(name = "request")
+    @JoinColumn(name = "request_id")
     private ItemRequest request;
 
     @OneToMany
     @JoinColumn(name = "item_id")
     private List<Comment> comments;
-
-    public Item(
-            String name,
-            String description,
-            Boolean available,
-            ItemRequest itemRequest
-    ) {
-        this.name = name;
-        this.description = description;
-        this.isAvailable = available;
-        this.request = itemRequest;
-    }
 }
