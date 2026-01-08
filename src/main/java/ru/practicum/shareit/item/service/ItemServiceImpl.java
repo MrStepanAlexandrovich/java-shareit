@@ -158,13 +158,4 @@ public class ItemServiceImpl implements ItemService {
             throw new NotFoundException("User doesn't exist");
         }
     }
-
-    private void findLastAndNextBookings(ItemWithBookingsDto itemWithBookingsDto) {
-        Booking lastBooking = bookingRepository.findLastBooking(LocalDateTime.now(), itemWithBookingsDto.getId())
-                .orElse(null);
-
-        if (lastBooking != null) {
-LocalDate.from(lastBooking.getStart());
-        }
-    }
 }
