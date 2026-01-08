@@ -17,6 +17,7 @@ import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.user.dao.UserRepository;
 import ru.practicum.shareit.user.model.User;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Collection;
 import java.util.List;
@@ -126,7 +127,8 @@ public class ItemServiceImpl implements ItemService {
             throw new BadRequestException("Users can't add comments before ending of booking");
         }
 
-        comment.setItem(booking1.getItem());;
+        comment.setItem(booking1.getItem());
+        ;
         comment.setAuthor(user);
 
         return CommentMapper.toCommentDto(commentRepository.save(comment));
@@ -154,6 +156,15 @@ public class ItemServiceImpl implements ItemService {
         }
         if ((userRepository.findById(item.getOwner().getId())).isEmpty()) {
             throw new NotFoundException("User doesn't exist");
+        }
+    }
+
+    private void findLastAndNextBookings(ItemWithBookingsDto itemWithBookingsDto) {
+        Booking lastBooking = bookingRepository.findLastBooking(LocalDateTime.now(), itemWithBookingsDto.getId())
+                .orElse(null);
+
+        if (lastBooking != null) {
+LocalDate.from(lastBooking.getStart());
         }
     }
 }

@@ -55,12 +55,7 @@ public class UserServiceImpl implements UserService {
             user.setEmail(oldUser.getEmail());
         }
 
-
-        if (isEmailUnique(user.getEmail())) {
-            return  UserMapper.toUserDto(userRepository.save(user));
-        } else {
-            throw new ConflictException("Email is not unique");
-        }
+        return UserMapper.toUserDto(userRepository.save(user));
     }
 
     @Transactional
