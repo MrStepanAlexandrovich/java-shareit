@@ -29,26 +29,12 @@ public interface BookingRepository extends JpaRepository<Booking, Integer> {
 
     Collection<Booking> findByBookerIdAndStatus(int userId, Status status, Sort sort);
 
-
-    Collection<Booking> findByBookerId(int userId);
-
     Collection<Booking> findByBookerId(int userId, Sort sort);
-
-    @Query("SELECT b FROM Booking b JOIN FETCH b.item WHERE b.status=:status and b.item.owner.id=:userId")
-    Collection<Booking> getUsersItemsThatBooked(@Param("status") int userId, @Param("status") Status status);
-
-    @Query("SELECT b FROM Booking b JOIN FETCH b.item WHERE b.end <= :now " +
-            "and b.item.id=:itemId ORDER BY b.end DESC LIMIT 1")
-    Optional<Booking> findLastBooking(@Param("now")LocalDateTime now,
-                                      @Param("itemId")int itemId);
-
-    @Query("SELECT b FROM Booking b JOIN FETCH b.item WHERE b.start >= :now " +
-            "and b.item.id=:itemId ORDER BY b.start ASC LIMIT 1")
-    Optional<Booking> findNextBooking(@Param("now")LocalDateTime now,
-                                      @Param("itemId")int itemId);
 
     Collection<Booking> findByBookerIdAndEndIsBefore(int userId, LocalDateTime dateTime, Sort sort);
 
     Collection<Booking> findByBookerIdAndStartIsAfter(int userId, LocalDateTime dateTime, Sort sort);
 
+    Collection<Booking> findByBookerIdAndStartIsBeforeAndEndIsAfter(int userId, LocalDateTime dateTime1,
+                                                                LocalDateTime dateTime2, Sort sort);
 }

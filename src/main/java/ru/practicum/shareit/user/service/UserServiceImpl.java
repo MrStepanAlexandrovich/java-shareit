@@ -12,6 +12,7 @@ import ru.practicum.shareit.user.dto.UserEditDto;
 import ru.practicum.shareit.user.dto.UserMapper;
 import ru.practicum.shareit.user.model.User;
 
+import java.util.Objects;
 import java.util.Optional;
 
 @Service
@@ -68,7 +69,7 @@ public class UserServiceImpl implements UserService {
         return userRepository.findAll()
                 .stream()
                 .map(User::getEmail)
-                .filter(email1 -> email1 != null)
+                .filter(Objects::nonNull)
                 .noneMatch(email2 -> email2.equals(email));
     }
 }

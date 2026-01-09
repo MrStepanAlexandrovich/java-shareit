@@ -65,9 +65,7 @@ public class ItemServiceImpl implements ItemService {
     public ItemWithBookingsDto get(int id) {
         Optional<Item> itemOptional = itemRepository.findById(id);
         if (itemOptional.isPresent()) {
-            ItemWithBookingsDto itemDto = ItemMapper.toItemWithBookingsDto(itemOptional.get());
-
-            return itemDto;
+            return ItemMapper.toItemWithBookingsDto(itemOptional.get());
         } else {
             throw new NotFoundException("item with id = " + id + " wasn't found");
         }
@@ -127,14 +125,10 @@ public class ItemServiceImpl implements ItemService {
         }
 
         comment.setItem(booking1.getItem());
-        ;
+
         comment.setAuthor(user);
 
         return CommentMapper.toCommentDto(commentRepository.save(comment));
-    }
-
-    public List<Comment> getCommentsForItem(int itemId) {
-        return commentRepository.findCommentByItemId(itemId);
     }
 
     private void checkUser(int userId, int itemId) {

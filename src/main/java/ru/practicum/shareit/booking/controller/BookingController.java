@@ -7,7 +7,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import ru.practicum.shareit.booking.dto.BookingDto;
 import ru.practicum.shareit.booking.dto.BookingCreateDto;
-import ru.practicum.shareit.booking.model.Status;
+import ru.practicum.shareit.booking.model.State;
 import ru.practicum.shareit.booking.service.BookingService;
 import ru.practicum.shareit.item.dto.ItemDto;
 import java.util.Collection;
@@ -52,22 +52,22 @@ public class BookingController {
 
     @GetMapping
     public ResponseEntity<Collection<BookingDto>> getBookingsOfUser(
-            @RequestParam(value = "state", defaultValue = "ALL") Status status,
+            @RequestParam(value = "state", defaultValue = "ALL") State state,
             @RequestHeader("X-Sharer-User-Id") int userId
     ) {
         return new ResponseEntity<>(
-                bookingService.getBookingsOfUser(userId, status),
+                bookingService.getBookingsOfUser(userId, state),
                 HttpStatus.OK
         );
     }
 
     @GetMapping("/owner")
     public ResponseEntity<Collection<ItemDto>> getUsersItemsThatBooked(
-            @RequestParam(value = "state", defaultValue = "ALL") Status status,
+            @RequestParam(value = "state", defaultValue = "ALL") State state,
             @RequestHeader("X-Sharer-User-Id") int userId
     ) {
         return new ResponseEntity<>(
-                bookingService.getUsersItemsThatBooked(userId, status),
+                bookingService.getUsersItemsThatBooked(userId, state),
                 HttpStatus.OK
         );
     }

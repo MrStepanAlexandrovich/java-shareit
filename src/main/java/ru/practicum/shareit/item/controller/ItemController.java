@@ -73,7 +73,7 @@ public class ItemController {
     public ResponseEntity<CommentDto> addComment(
             @PathVariable int itemId,
             @RequestHeader("X-Sharer-User-Id") int userId,
-            @RequestBody CommentDto commentDto
+            @RequestBody @Valid CommentDto commentDto
     ) {
         return new ResponseEntity<>(
                 itemService.addComment(commentDto, userId, itemId),
