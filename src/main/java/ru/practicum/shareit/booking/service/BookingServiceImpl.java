@@ -15,8 +15,6 @@ import ru.practicum.shareit.exception.BadRequestException;
 import ru.practicum.shareit.exception.ForbiddenException;
 import ru.practicum.shareit.exception.NotFoundException;
 import ru.practicum.shareit.item.dao.ItemRepository;
-import ru.practicum.shareit.item.dto.ItemDto;
-import ru.practicum.shareit.item.dto.ItemMapper;
 import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.user.dao.UserRepository;
 import ru.practicum.shareit.user.model.User;
@@ -93,17 +91,33 @@ public class BookingServiceImpl implements BookingService {
     }
 
     @Override
-    public Collection<ItemDto> getUsersItemsThatBooked(int userId, State state) {
+    public Collection<BookingDto> getBookingsByItemsOwner(int userId, State state) {
         Sort newestFirst = Sort.by(Sort.Direction.DESC, "start");
 
         userRepository.findById(userId).orElseThrow(
                 () -> new NotFoundException("User with id = " + userId + " wasn't found")
         );
 
-        return getBookingsByState(userId, state, newestFirst)
-                .stream()
-                .map(Booking::getItem)
-                .map(ItemMapper::toItemDto)
+        Collection<Booking> bookings = switch (state) {
+            case ALL -> bookingRepository.findByItemOwnerId(userId, newestFirst);
+
+            case PAST -> bookingRepository
+                    .findByItemOwnerIdAndEndIsBefore(userId, LocalDateTime.now(), newestFirst);
+
+            case FUTURE -> bookingRepository
+                    .findByItemOwnerIdAndStartIsAfter(userId, LocalDateTime.now(), newestFirst);
+
+            case CURRENT -> bookingRepository
+                    .findByItemOwnerIdAndStartIsBeforeAndEndIsAfter(userId, LocalDateTime.now(),
+                            LocalDateTime.now(), newestFirst);
+
+            case WAITING -> bookingRepository.findByItemOwnerIdAndStatus(userId, Status.WAITING, newestFirst);
+
+            case REJECTED -> bookingRepository.findByItemOwnerIdAndStatus(userId, Status.REJECTED, newestFirst);
+        };
+
+        return bookings.stream()
+                .map(BookingMapper::toBookingDto)
                 .toList();
     }
 
@@ -115,14 +129,7 @@ public class BookingServiceImpl implements BookingService {
 
         Sort newestFirst = Sort.by(Sort.Direction.DESC, "start");
 
-        return getBookingsByState(userId, state, newestFirst)
-                .stream()
-                .map(BookingMapper::toBookingDto)
-                .toList();
-    }
-
-    private Collection<Booking> getBookingsByState(int userId, State state, Sort newestFirst) {
-        return switch (state) {
+        Collection<Booking> bookings = switch (state) {
             case ALL -> bookingRepository.findByBookerId(userId, newestFirst);
 
             case PAST -> bookingRepository.findByBookerIdAndEndIsBefore(userId, LocalDateTime.now(),
@@ -139,5 +146,9 @@ public class BookingServiceImpl implements BookingService {
 
             case WAITING -> bookingRepository.findByBookerIdAndStatus(userId, Status.WAITING);
         };
+
+        return bookings.stream()
+                .map(BookingMapper::toBookingDto)
+                .toList();
     }
 }

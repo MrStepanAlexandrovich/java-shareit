@@ -9,7 +9,6 @@ import ru.practicum.shareit.booking.dto.BookingDto;
 import ru.practicum.shareit.booking.dto.BookingCreateDto;
 import ru.practicum.shareit.booking.model.State;
 import ru.practicum.shareit.booking.service.BookingService;
-import ru.practicum.shareit.item.dto.ItemDto;
 import java.util.Collection;
 
 @RestController
@@ -62,12 +61,12 @@ public class BookingController {
     }
 
     @GetMapping("/owner")
-    public ResponseEntity<Collection<ItemDto>> getUsersItemsThatBooked(
+    public ResponseEntity<Collection<BookingDto>> getUsersItemsThatBooked(
             @RequestParam(value = "state", defaultValue = "ALL") State state,
             @RequestHeader("X-Sharer-User-Id") int userId
     ) {
         return new ResponseEntity<>(
-                bookingService.getUsersItemsThatBooked(userId, state),
+                bookingService.getBookingsByItemsOwner(userId, state),
                 HttpStatus.OK
         );
     }
