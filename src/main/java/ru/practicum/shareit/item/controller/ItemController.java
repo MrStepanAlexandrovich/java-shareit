@@ -5,15 +5,11 @@ import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import ru.practicum.shareit.item.dto.ItemDto;
-import ru.practicum.shareit.item.dto.ItemMapper;
+import ru.practicum.shareit.item.dto.*;
 import ru.practicum.shareit.item.service.ItemService;
 
-import java.util.List;
+import java.util.Collection;
 
-/**
- * TODO Sprint add-controllers.
- */
 @RestController
 @RequestMapping("/items")
 @AllArgsConstructor
@@ -22,12 +18,11 @@ public class ItemController {
 
     @PostMapping
     public ResponseEntity<ItemDto> add(
-            @RequestBody @Valid ItemDto item,
+            @RequestBody @Valid ItemDto itemDto,
             @RequestHeader("X-Sharer-User-Id") int userId
     ) {
-        item.setOwner(userId);
         return new ResponseEntity<>(
-                ItemMapper.toItemDto(itemService.add(ItemMapper.toItem(item))),
+                itemService.add(itemDto, userId),
                 HttpStatus.CREATED
         );
     }
@@ -38,48 +33,50 @@ public class ItemController {
             @PathVariable int itemId,
             @RequestHeader("X-Sharer-User-Id") int userId
     ) {
-        return new ResponseEntity<>(ItemMapper.toItemDto(
-                itemService.edit(
-                        itemId,
-                        ItemMapper.toItem(itemDto),
-                        userId
-                )),
+        return new ResponseEntity<>(
+                itemService.edit(itemId, itemDto, userId),
                 HttpStatus.OK
         );
     }
 
     @GetMapping("/{itemId}")
-    public ResponseEntity<ItemDto> getItem(
+    public ResponseEntity<ItemWithBookingsDto> getItem(
             @PathVariable int itemId,
             @RequestHeader("X-Sharer-User-Id") int userId
     ) {
         return new ResponseEntity<>(
-                ItemMapper.toItemDto(itemService.get(itemId)),
+                itemService.get(itemId),
                 HttpStatus.OK
         );
     }
 
     @GetMapping
-    public ResponseEntity<List<ItemDto>> getItems(@RequestHeader("X-Sharer-User-Id") int userId) {
+    public ResponseEntity<Collection<ItemDto>> getItems(@RequestHeader("X-Sharer-User-Id") int userId) {
         return new ResponseEntity<>(
-                itemService.getAll(userId)
-                        .stream()
-                        .map(ItemMapper::toItemDto)
-                        .toList(),
+                itemService.getAll(userId),
                 HttpStatus.OK
         );
     }
 
     @GetMapping("/search")
-    public ResponseEntity<List<ItemDto>> search(
+    public ResponseEntity<Collection<ItemDto>> search(
             @RequestParam("text") String text,
             @RequestHeader("X-Sharer-User-Id") int userId
     ) {
         return new ResponseEntity<>(
-                itemService.search(text)
-                        .stream()
-                        .map(ItemMapper::toItemDto)
-                        .toList(),
+                itemService.search(text),
+                HttpStatus.OK
+        );
+    }
+
+    @PostMapping("/{itemId}/comment")
+    public ResponseEntity<CommentDto> addComment(
+            @PathVariable int itemId,
+            @RequestHeader("X-Sharer-User-Id") int userId,
+            @RequestBody @Valid CommentDto commentDto
+    ) {
+        return new ResponseEntity<>(
+                itemService.addComment(commentDto, userId, itemId),
                 HttpStatus.OK
         );
     }

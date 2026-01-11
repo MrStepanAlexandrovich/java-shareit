@@ -1,57 +1,75 @@
 package ru.practicum.shareit.user.service;
 
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import ru.practicum.shareit.exception.ConflictException;
 import ru.practicum.shareit.exception.NotFoundException;
-import ru.practicum.shareit.user.dao.UserDao;
+import ru.practicum.shareit.user.dao.UserRepository;
+import ru.practicum.shareit.user.dto.UserCreateDto;
+import ru.practicum.shareit.user.dto.UserDto;
+import ru.practicum.shareit.user.dto.UserEditDto;
+import ru.practicum.shareit.user.dto.UserMapper;
 import ru.practicum.shareit.user.model.User;
 
+import java.util.Objects;
 import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
 public class UserServiceImpl implements UserService {
-    private final UserDao userDao;
+    private final UserRepository userRepository;
 
     @Override
-    public User add(User user) {
+    public UserDto add(UserCreateDto userDto) {
+        User user = UserMapper.toUser(userDto);
+
         if (isEmailUnique(user.getEmail())) {
-            return userDao.add(user);
+            return UserMapper.toUserDto(userRepository.save(user));
         } else {
             throw new ConflictException("Email is not unique");
         }
     }
 
     @Override
-    public User get(int id) {
-        Optional<User> userOptional = userDao.get(id);
+    public UserDto get(int id) {
+        Optional<User> userOptional = userRepository.findById(id);
         if (userOptional.isPresent()) {
-            return userOptional.get();
+            return UserMapper.toUserDto(userOptional.get());
         } else {
             throw new NotFoundException("User with id = " + id + " wasn't found");
         }
     }
 
+    @Transactional
     @Override
-    public User edit(int id, User user) {
-        if (isEmailUnique(user.getEmail())) {
-            return userDao.edit(id, user);
-        } else {
-            throw new ConflictException("Email is not unique");
+    public UserDto edit(int id, UserEditDto userEditDto) {
+        User user = UserMapper.toUser(userEditDto);
+
+        user.setId(id);
+        User oldUser = userRepository.findById(id).orElseThrow(() -> new NotFoundException("User with ID = "
+                + id + " wasn't found"));
+
+        if (user.getName() == null) {
+            user.setName(oldUser.getName());
+        } else if (user.getEmail() == null) {
+            user.setEmail(oldUser.getEmail());
         }
+
+        return UserMapper.toUserDto(userRepository.save(user));
     }
 
+    @Transactional
     @Override
     public void delete(int id) {
-        userDao.delete(id);
+        userRepository.deleteById(id);
     }
 
     private boolean isEmailUnique(String email) {
-        return userDao.getAll()
+        return userRepository.findAll()
                 .stream()
                 .map(User::getEmail)
-                .filter(email1 -> email1 != null)
+                .filter(Objects::nonNull)
                 .noneMatch(email2 -> email2.equals(email));
     }
 }

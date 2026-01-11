@@ -4,12 +4,12 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
+import java.util.List;
 
-/**
- * TODO Sprint add-controllers.
- */
 @Data
 @AllArgsConstructor
+@NoArgsConstructor
 public class ItemDto {
     private int id;
 
@@ -23,4 +23,5 @@ public class ItemDto {
     private Boolean available;
     private Integer owner;
     private Integer request;
+    private List<CommentDto> comments;
 }

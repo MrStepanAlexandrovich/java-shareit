@@ -5,13 +5,11 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import ru.practicum.shareit.user.dto.UserCreateDto;
 import ru.practicum.shareit.user.dto.UserDto;
-import ru.practicum.shareit.user.dto.UserMapper;
+import ru.practicum.shareit.user.dto.UserEditDto;
 import ru.practicum.shareit.user.service.UserService;
 
-/**
- * TODO Sprint add-controllers.
- */
 @RestController
 @RequestMapping(path = "/users")
 @RequiredArgsConstructor
@@ -21,15 +19,15 @@ public class UserController {
     @GetMapping("/{userId}")
     public ResponseEntity<UserDto> getUser(@PathVariable int userId) {
         return new ResponseEntity<>(
-                UserMapper.toUserDto(userService.get(userId)),
+                userService.get(userId),
                 HttpStatus.OK
         );
     }
 
     @PostMapping
-    public ResponseEntity<UserDto> createUser(@RequestBody @Valid UserDto userDto) {
+    public ResponseEntity<UserDto> createUser(@RequestBody @Valid UserCreateDto userCreateDto) {
         return new ResponseEntity<>(
-                UserMapper.toUserDto(userService.add(UserMapper.toUser(userDto))),
+                userService.add(userCreateDto),
                 HttpStatus.OK
         );
     }
@@ -37,14 +35,10 @@ public class UserController {
     @PatchMapping("/{userId}")
     public ResponseEntity<UserDto> editUser(
             @PathVariable int userId,
-            @RequestBody UserDto userDto
+            @RequestBody UserEditDto userEditDto
     ) {
         return new ResponseEntity<>(
-                UserMapper.toUserDto(userService.edit(
-                                userId,
-                                UserMapper.toUser(userDto)
-                        )
-                ),
+                userService.edit(userId, userEditDto),
                 HttpStatus.OK
         );
     }

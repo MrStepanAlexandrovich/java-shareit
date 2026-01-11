@@ -11,11 +11,19 @@ public class UserMapper {
         );
     }
 
-    public static User toUser(UserDto userDto) {
+    public static User toUser(UserEditDto user) {
         return new User(
-                userDto.getId(),
-                userDto.getName(),
-                userDto.getEmail()
+                user.getId(),
+                user.getName(),
+                user.getEmail()
+        );
+    }
+
+    public static User toUser(UserCreateDto user) {
+        return new User(
+                user.getId(),
+                user.getName(),
+                user.getEmail()
         );
     }
 }
