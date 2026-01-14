@@ -8,10 +8,12 @@ import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor
+@Setter
 public class BookItemRequestDto {
 	@NotNull
 	private Long itemId;
