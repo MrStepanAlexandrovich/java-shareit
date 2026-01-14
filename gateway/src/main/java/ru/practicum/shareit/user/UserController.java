@@ -10,6 +10,7 @@ import ru.practicum.shareit.user.dto.UserEditDto;
 
 @RestController
 @RequiredArgsConstructor
+@RequestMapping("/users")
 public class UserController {
     private final UserClient userClient;
 

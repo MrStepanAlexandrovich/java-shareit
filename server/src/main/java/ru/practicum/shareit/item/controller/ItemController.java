@@ -18,7 +18,7 @@ public class ItemController {
 
     @PostMapping
     public ResponseEntity<ItemDto> add(
-            @RequestBody @Valid ItemDto itemDto,
+            @RequestBody @Valid ItemCreateDto itemDto,
             @RequestHeader("X-Sharer-User-Id") int userId
     ) {
         return new ResponseEntity<>(
