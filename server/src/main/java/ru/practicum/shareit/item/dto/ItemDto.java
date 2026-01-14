@@ -12,14 +12,8 @@ import java.util.List;
 @NoArgsConstructor
 public class ItemDto {
     private int id;
-
-    @NotBlank
     private String name;
-
-    @NotBlank
     private String description;
-
-    @NotNull
     private Boolean available;
     private Integer owner;
     private Integer request;

@@ -9,11 +9,6 @@ import lombok.Data;
 @AllArgsConstructor
 public class UserCreateDto {
     private int id;
-
-    @NotBlank
     private String name;
-
-    @Email
-    @NotBlank
     private String email;
 }

@@ -9,8 +9,6 @@ import lombok.NoArgsConstructor;
 public class UserEditDto {
     private int id;
     private String name;
-
-    @Email
     private String email;
 
 }

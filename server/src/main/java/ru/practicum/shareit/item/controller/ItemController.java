@@ -18,7 +18,7 @@ public class ItemController {
 
     @PostMapping
     public ResponseEntity<ItemDto> add(
-            @RequestBody @Valid ItemCreateDto itemDto,
+            @RequestBody ItemCreateDto itemDto,
             @RequestHeader("X-Sharer-User-Id") int userId
     ) {
         return new ResponseEntity<>(
@@ -73,7 +73,7 @@ public class ItemController {
     public ResponseEntity<CommentDto> addComment(
             @PathVariable int itemId,
             @RequestHeader("X-Sharer-User-Id") int userId,
-            @RequestBody @Valid CommentDto commentDto
+            @RequestBody CommentDto commentDto
     ) {
         return new ResponseEntity<>(
                 itemService.addComment(commentDto, userId, itemId),
