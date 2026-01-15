@@ -3,7 +3,6 @@ package ru.practicum.shareit.user;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.MockitoAnnotations;
-import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.client.RestTemplate;
@@ -17,7 +16,6 @@ class UserClientTest {
     private UserClient client;
     private AutoCloseable mocks;
 
-    @SuppressWarnings("unchecked")
     @BeforeEach
     void setUp() {
         mocks = MockitoAnnotations.openMocks(this);

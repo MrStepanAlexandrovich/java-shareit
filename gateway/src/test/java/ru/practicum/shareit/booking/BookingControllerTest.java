@@ -1,4 +1,3 @@
-// language: java
 package ru.practicum.shareit.booking;
 
 import com.fasterxml.jackson.databind.ObjectMapper;

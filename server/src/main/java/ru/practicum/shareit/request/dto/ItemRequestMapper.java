@@ -18,7 +18,11 @@ public class ItemRequestMapper {
         ItemRequestResponseDto itemRequestResponseDto = new ItemRequestResponseDto();
 
         itemRequestResponseDto.setId(itemRequest.getId());
-        itemRequestResponseDto.setRequester(UserMapper.toUserDto(itemRequest.getRequester()));
+
+        if (itemRequest.getRequester() != null) {
+            itemRequestResponseDto.setRequester(UserMapper.toUserDto(itemRequest.getRequester()));
+        }
+
         itemRequestResponseDto.setCreated(itemRequest.getCreated());
         itemRequestResponseDto.setDescription(itemRequest.getDescription());
 

@@ -26,8 +26,6 @@ class BookingClientTest {
     @BeforeEach
     void setUp() {
         mocks = MockitoAnnotations.openMocks(this);
-        // создаём мок с дефолтным Answer — для любых методов, возвращающих ResponseEntity,
-        // будем возвращать ResponseEntity.ok("resp"), чтобы избежать null и NPE.
         rest = mock(RestTemplate.class, invocation -> {
             if (ResponseEntity.class.isAssignableFrom(invocation.getMethod().getReturnType())) {
                 return ResponseEntity.ok("resp");
@@ -39,8 +37,6 @@ class BookingClientTest {
         when(builder.requestFactory(any(java.util.function.Supplier.class))).thenReturn(builder);
         when(builder.build()).thenReturn(rest);
 
-        // добавляем универсальные моки, чтобы покрыть разные перегрузки RestTemplate,
-        // используемые в хелперах POST/DELETE и других методах клиента
         when(rest.postForEntity(anyString(), any(), any(Class.class)))
                 .thenReturn(ResponseEntity.ok("resp"));
 
@@ -82,23 +78,18 @@ class BookingClientTest {
 
     @Test
     void shouldBookAndGetApproveAndOwner() {
-        // покрытие варианта с Class + Object[] (бывший мок)
         when(rest.exchange(anyString(), any(), any(), eq(Object.class), any(Object[].class)))
                 .thenReturn(ResponseEntity.ok("resp"));
 
-        // покрытие варианта с Class без varargs (POST)
         when(rest.exchange(anyString(), eq(HttpMethod.POST), any(), eq(Object.class)))
                 .thenReturn(ResponseEntity.ok("resp"));
 
-        // дополнительный мок: ParameterizedTypeReference + varargs
         when(rest.exchange(anyString(), any(), any(), any(ParameterizedTypeReference.class), any(Object[].class)))
                 .thenReturn(ResponseEntity.ok("resp"));
 
-        // дополнительный мок: ParameterizedTypeReference без varargs
         when(rest.exchange(anyString(), any(), any(), any(ParameterizedTypeReference.class)))
                 .thenReturn(ResponseEntity.ok("resp"));
 
-        // дополнительный мок: Class + Map (на случай использования Map как uri-variables)
         when(rest.exchange(anyString(), any(), any(), eq(Object.class), any(Map.class)))
                 .thenReturn(ResponseEntity.ok("resp"));
 
@@ -107,7 +98,6 @@ class BookingClientTest {
         assertEquals("resp", client.approveBooking(1L, 5L, true).getBody());
         assertEquals("resp", client.getUsersItemsThatBooked(1L, ru.practicum.shareit.booking.dto.BookingState.ALL).getBody());
 
-        // verify some path usage
         verify(rest).exchange(eq(""), eq(HttpMethod.POST), any(), eq(Object.class));
         verify(rest).exchange(eq("/5"), eq(HttpMethod.GET), any(), eq(Object.class), any(Object[].class));
     }

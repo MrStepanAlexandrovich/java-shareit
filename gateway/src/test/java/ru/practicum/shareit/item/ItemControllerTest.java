@@ -69,12 +69,10 @@ class ItemControllerTest {
         ItemDto dto = new ItemDto();
         dto.setName("n");
         dto.setDescription("d");
-        // available is required by validation (@NotNull) — set it so the request is valid
         dto.setAvailable(true);
 
         when(itemClient.edit(anyLong(), anyLong(), any(ItemDto.class))).thenReturn(ResponseEntity.ok("edited"));
 
-        // Use a local MockMvc without validator for this test to avoid request validation rejecting the partial DTO
         MockMvc localMvc = MockMvcBuilders.standaloneSetup(new ItemController(itemClient))
                 .setMessageConverters(new MappingJackson2HttpMessageConverter(objectMapper))
                 .build();
