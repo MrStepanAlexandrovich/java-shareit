@@ -16,7 +16,7 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
 
-class BookingClientTest {
+public class BookingClientTest {
     private RestTemplate rest;
     private RestTemplateBuilder builder;
     private BookingClient client;
@@ -24,7 +24,7 @@ class BookingClientTest {
     private AutoCloseable mocks;
 
     @BeforeEach
-    void setUp() {
+    public void setUp() {
         mocks = MockitoAnnotations.openMocks(this);
         rest = mock(RestTemplate.class, invocation -> {
             if (ResponseEntity.class.isAssignableFrom(invocation.getMethod().getReturnType())) {
@@ -59,14 +59,14 @@ class BookingClientTest {
     }
 
     @AfterEach
-    void tearDown() throws Exception {
+    public void tearDown() throws Exception {
         if (mocks != null) {
             mocks.close();
         }
     }
 
     @Test
-    void shouldGetBookingsCallRestExchange() {
+    public void shouldGetBookingsCallRestExchange() {
         when(rest.exchange(anyString(), eq(HttpMethod.GET), any(), eq(Object.class), any(Map.class)))
                 .thenReturn(ResponseEntity.ok("ok"));
 
@@ -77,7 +77,7 @@ class BookingClientTest {
     }
 
     @Test
-    void shouldBookAndGetApproveAndOwner() {
+    public void shouldBookAndGetApproveAndOwner() {
         when(rest.exchange(anyString(), any(), any(), eq(Object.class), any(Object[].class)))
                 .thenReturn(ResponseEntity.ok("resp"));
 

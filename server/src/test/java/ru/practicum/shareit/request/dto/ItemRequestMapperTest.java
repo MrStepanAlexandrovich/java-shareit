@@ -8,10 +8,10 @@ import java.time.LocalDateTime;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-class ItemRequestMapperTest {
+public class ItemRequestMapperTest {
 
     @Test
-    void toItemRequestAndResponse() {
+    public void toItemRequestAndResponse() {
         ItemRequestCreateDto create = new ItemRequestCreateDto();
         create.setDescription("Need drill");
 

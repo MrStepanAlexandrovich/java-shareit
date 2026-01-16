@@ -5,10 +5,10 @@ import org.springframework.http.HttpStatus;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-class ErrorResponseTest {
+public class ErrorResponseTest {
 
     @Test
-    void constructorSetsFields() {
+    public void constructorSetsFields() {
         ErrorResponse r = new ErrorResponse(HttpStatus.BAD_REQUEST, "err", "msg");
         assertEquals(HttpStatus.BAD_REQUEST, r.getStatus());
         assertEquals("err", r.getError());

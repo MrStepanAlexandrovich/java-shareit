@@ -7,9 +7,9 @@ import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-class BookingStateTest {
+public class BookingStateTest {
     @Test
-    void fromShouldReturnCorrectEnumForVariousCases() {
+    public void fromShouldReturnCorrectEnumForVariousCases() {
         assertEquals(Optional.of(BookingState.ALL), BookingState.from("ALL"));
         assertEquals(Optional.of(BookingState.CURRENT), BookingState.from("current"));
         assertEquals(Optional.of(BookingState.FUTURE), BookingState.from("FuTuRe"));

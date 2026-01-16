@@ -4,10 +4,10 @@ import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-class ExceptionClassesTest {
+public class ExceptionClassesTest {
 
     @Test
-    void exceptionsContainMessage() {
+    public void exceptionsContainMessage() {
         NotFoundException nfe = new NotFoundException("not found");
         ConflictException ce = new ConflictException("conf");
         ForbiddenException fe = new ForbiddenException("forb");

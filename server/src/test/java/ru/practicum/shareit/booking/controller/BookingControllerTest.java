@@ -19,7 +19,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @WebMvcTest(controllers = BookingController.class)
-class BookingControllerTest {
+public class BookingControllerTest {
 
     @Autowired
     private MockMvc mockMvc;
@@ -31,7 +31,7 @@ class BookingControllerTest {
     private BookingService bookingService;
 
     @Test
-    void createBooking() throws Exception {
+    public void createBooking() throws Exception {
         BookingCreateDto create = new BookingCreateDto();
         create.setItemId(5);
         create.setStart(LocalDateTime.now().plusDays(1));
@@ -47,7 +47,7 @@ class BookingControllerTest {
     }
 
     @Test
-    void approveBooking() throws Exception {
+    public void approveBooking() throws Exception {
         when(bookingService.approveBooking(eq(2), eq(1), eq(true))).thenReturn(new BookingDto());
 
         mockMvc.perform(patch("/bookings/1").param("approved", "true").header("X-Sharer-User-Id", "2"))
@@ -55,13 +55,13 @@ class BookingControllerTest {
     }
 
     @Test
-    void getBooking() throws Exception {
+    public void getBooking() throws Exception {
         when(bookingService.getBooking(1)).thenReturn(new BookingDto());
         mockMvc.perform(get("/bookings/1")).andExpect(status().isOk());
     }
 
     @Test
-    void getBookingsOfUser() throws Exception {
+    public void getBookingsOfUser() throws Exception {
         when(bookingService.getBookingsOfUser(eq(2), any())).thenReturn(List.of());
         mockMvc.perform(get("/bookings").header("X-Sharer-User-Id", "2")).andExpect(status().isOk());
     }

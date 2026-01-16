@@ -17,7 +17,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @WebMvcTest(controllers = ItemController.class)
-class ItemControllerTest {
+public class ItemControllerTest {
 
     @Autowired
     private MockMvc mockMvc;
@@ -29,7 +29,7 @@ class ItemControllerTest {
     private ObjectMapper objectMapper;
 
     @Test
-    void addItem() throws Exception {
+    public void addItem() throws Exception {
         ItemCreateDto create = new ItemCreateDto();
         create.setName("N");
         create.setDescription("D");
@@ -53,14 +53,14 @@ class ItemControllerTest {
     }
 
     @Test
-    void getItem() throws Exception {
+    public void getItem() throws Exception {
         when(itemService.get(5)).thenReturn(new ItemWithBookingsDto());
         mockMvc.perform(get("/items/5").header("X-Sharer-User-Id", "10"))
                 .andExpect(status().isOk());
     }
 
     @Test
-    void search() throws Exception {
+    public void search() throws Exception {
         when(itemService.search("q")).thenReturn(List.of(new ItemDto()));
         mockMvc.perform(get("/items/search").param("text", "q").header("X-Sharer-User-Id", "10"))
                 .andExpect(status().isOk())

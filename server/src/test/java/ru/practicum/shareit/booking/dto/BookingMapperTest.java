@@ -11,10 +11,10 @@ import java.time.LocalDateTime;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-class BookingMapperTest {
+public class BookingMapperTest {
 
     @Test
-    void toBookingAndToBookingDto() {
+    public void toBookingAndToBookingDto() {
         BookingCreateDto create = new BookingCreateDto();
         create.setItemId(7);
         create.setUserId(8);

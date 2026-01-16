@@ -8,10 +8,10 @@ import ru.practicum.shareit.user.model.User;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-class UserMapperTest {
+public class UserMapperTest {
 
     @Test
-    void toUserDtoAndBack() {
+    public void toUserDtoAndBack() {
         User user = new User(1, "John", "john@example.com");
         UserDto dto = UserMapper.toUserDto(user);
 

@@ -29,7 +29,7 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
-class BookingServiceImplTest {
+public class BookingServiceImplTest {
 
     @Mock
     private BookingRepository bookingRepository;
@@ -46,7 +46,7 @@ class BookingServiceImplTest {
     private User user;
 
     @BeforeEach
-    void setup() {
+    public void setup() {
         createDto = new BookingCreateDto();
         createDto.setItemId(5);
         createDto.setUserId(2);
@@ -60,7 +60,7 @@ class BookingServiceImplTest {
     }
 
     @Test
-    void createBookingSuccess() {
+    public void createBookingSuccess() {
         when(userRepository.findById(2)).thenReturn(Optional.of(user));
         when(itemRepository.findById(5)).thenReturn(Optional.of(item));
         when(bookingRepository.save(any())).thenAnswer(i -> i.getArgument(0));
@@ -70,7 +70,7 @@ class BookingServiceImplTest {
     }
 
     @Test
-    void createBookingInvalidTimes() {
+    public void createBookingInvalidTimes() {
         createDto.setStart(LocalDateTime.now().plusDays(5));
         createDto.setEnd(LocalDateTime.now().plusDays(1));
         when(userRepository.findById(2)).thenReturn(Optional.of(user));
@@ -78,7 +78,7 @@ class BookingServiceImplTest {
     }
 
     @Test
-    void createBookingItemUnavailable() {
+    public void createBookingItemUnavailable() {
         item.setIsAvailable(false);
         when(userRepository.findById(2)).thenReturn(Optional.of(user));
         when(itemRepository.findById(5)).thenReturn(Optional.of(item));
@@ -86,7 +86,7 @@ class BookingServiceImplTest {
     }
 
     @Test
-    void approveBookingForbidden() {
+    public void approveBookingForbidden() {
         Booking booking = new Booking();
         Item other = new Item();
         other.setId(5);
@@ -97,7 +97,7 @@ class BookingServiceImplTest {
     }
 
     @Test
-    void approveBookingSuccessApprove() {
+    public void approveBookingSuccessApprove() {
         Booking booking = new Booking();
         Item it = new Item();
         it.setId(5);
@@ -112,13 +112,13 @@ class BookingServiceImplTest {
     }
 
     @Test
-    void approveBookingNotFound() {
+    public void approveBookingNotFound() {
         when(bookingRepository.findBooking(9)).thenReturn(Optional.empty());
         assertThrows(NotFoundException.class, () -> bookingService.approveBooking(2, 9, true));
     }
 
     @Test
-    void approveBookingReject() {
+    public void approveBookingReject() {
         Booking booking = new Booking();
         Item it = new Item();
         it.setId(5);
@@ -133,20 +133,20 @@ class BookingServiceImplTest {
     }
 
     @Test
-    void getBookingNotFound() {
+    public void getBookingNotFound() {
         when(bookingRepository.findBooking(2)).thenReturn(Optional.empty());
         assertThrows(NotFoundException.class, () -> bookingService.getBooking(2));
     }
 
     @Test
-    void getBookingsOfUserAll() {
+    public void getBookingsOfUserAll() {
         when(userRepository.findById(2)).thenReturn(Optional.of(new User(2, "U", "u@e.com")));
         var res = bookingService.getBookingsOfUser(2, ru.practicum.shareit.booking.model.State.ALL);
         assertTrue(res.isEmpty());
     }
 
     @Test
-    void getBookingsOfUserPast() {
+    public void getBookingsOfUserPast() {
         when(userRepository.findById(2)).thenReturn(Optional.of(new User(2, "U", "u@e.com")));
         Booking b = new Booking(); b.setEnd(LocalDateTime.now().minusDays(1));
         when(bookingRepository.findByBookerIdAndEndIsBefore(eq(2), any(), any())).thenReturn(List.of(b));
@@ -155,7 +155,7 @@ class BookingServiceImplTest {
     }
 
     @Test
-    void getBookingsOfUserFuture() {
+    public void getBookingsOfUserFuture() {
         when(userRepository.findById(2)).thenReturn(Optional.of(new User(2, "U", "u@e.com")));
         Booking b = new Booking(); b.setStart(LocalDateTime.now().plusDays(5));
         when(bookingRepository.findByBookerIdAndStartIsAfter(eq(2), any(), any())).thenReturn(List.of(b));
@@ -164,7 +164,7 @@ class BookingServiceImplTest {
     }
 
     @Test
-    void getBookingsOfUserCurrent() {
+    public void getBookingsOfUserCurrent() {
         when(userRepository.findById(2)).thenReturn(Optional.of(new User(2, "U", "u@e.com")));
         Booking b = new Booking(); b.setStart(LocalDateTime.now().minusDays(1)); b.setEnd(LocalDateTime.now().plusDays(1));
         when(bookingRepository.findByBookerIdAndStartIsBeforeAndEndIsAfter(eq(2), any(), any(), any())).thenReturn(List.of(b));
@@ -173,7 +173,7 @@ class BookingServiceImplTest {
     }
 
     @Test
-    void getBookingsOfUserWaitingAndRejected() {
+    public void getBookingsOfUserWaitingAndRejected() {
         when(userRepository.findById(2)).thenReturn(Optional.of(new User(2, "U", "u@e.com")));
         Booking b = new Booking();
         when(bookingRepository.findByBookerIdAndStatus(eq(2), eq(Status.WAITING))).thenReturn(List.of(b));
@@ -186,7 +186,7 @@ class BookingServiceImplTest {
     }
 
     @Test
-    void getBookingsByItemsOwnerAllAndStates() {
+    public void getBookingsByItemsOwnerAllAndStates() {
         when(userRepository.findById(3)).thenReturn(Optional.of(new User(3, "U", "u@e.com")));
         when(bookingRepository.findByItemOwnerId(eq(3), any())).thenReturn(List.of());
         var res = bookingService.getBookingsByItemsOwner(3, ru.practicum.shareit.booking.model.State.ALL);

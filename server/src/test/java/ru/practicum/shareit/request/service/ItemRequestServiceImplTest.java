@@ -23,7 +23,7 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
-class ItemRequestServiceImplTest {
+public class ItemRequestServiceImplTest {
 
     @Mock
     private ItemRequestRepository itemRequestRepository;
@@ -38,7 +38,7 @@ class ItemRequestServiceImplTest {
     private ItemRequest itemRequest;
 
     @BeforeEach
-    void setUp() {
+    public void setUp() {
         itemRequest = new ItemRequest();
         itemRequest.setId(5);
         itemRequest.setDescription("Need");
@@ -46,7 +46,7 @@ class ItemRequestServiceImplTest {
     }
 
     @Test
-    void getRequestSuccess() {
+    public void getRequestSuccess() {
         when(itemRequestRepository.findById(5)).thenReturn(Optional.of(itemRequest));
         when(itemRepository.findByRequestId(5)).thenReturn(List.of(new Item()));
 
@@ -55,13 +55,13 @@ class ItemRequestServiceImplTest {
     }
 
     @Test
-    void getRequestNotFound() {
+    public void getRequestNotFound() {
         when(itemRequestRepository.findById(6)).thenReturn(Optional.empty());
         assertThrows(NotFoundException.class, () -> itemRequestService.getRequest(6));
     }
 
     @Test
-    void getUsersRequests() {
+    public void getUsersRequests() {
         when(userRepository.findById(2)).thenReturn(Optional.of(new User(2, "U", "u@e.com")));
         when(itemRequestRepository.findByRequesterId(eq(2), any())).thenReturn(List.of(itemRequest));
 
@@ -70,7 +70,7 @@ class ItemRequestServiceImplTest {
     }
 
     @Test
-    void getOthersRequests() {
+    public void getOthersRequests() {
         when(userRepository.findById(3)).thenReturn(Optional.of(new User(3, "U", "u@e.com")));
         when(itemRequestRepository.findByRequesterIdIsNot(eq(3), any())).thenReturn(List.of(itemRequest));
 
@@ -79,7 +79,7 @@ class ItemRequestServiceImplTest {
     }
 
     @Test
-    void addRequestSuccess() {
+    public void addRequestSuccess() {
         when(userRepository.findById(4)).thenReturn(Optional.of(new User(4, "U", "u@e.com")));
         when(itemRequestRepository.save(any())).thenAnswer(i -> {
             ItemRequest r = i.getArgument(0);

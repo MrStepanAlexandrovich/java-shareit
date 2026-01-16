@@ -25,7 +25,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @ExtendWith(MockitoExtension.class)
-class ItemControllerTest {
+public class ItemControllerTest {
     private MockMvc mockMvc;
 
     @Mock
@@ -34,7 +34,7 @@ class ItemControllerTest {
     private final ObjectMapper objectMapper = new ObjectMapper().registerModule(new JavaTimeModule());
 
     @BeforeEach
-    void setUp() {
+    public void setUp() {
         ItemController controller = new ItemController(itemClient);
         LocalValidatorFactoryBean validator = new LocalValidatorFactoryBean();
         validator.afterPropertiesSet();
@@ -46,7 +46,7 @@ class ItemControllerTest {
     }
 
     @Test
-    void shouldAddItem() throws Exception {
+    public void shouldAddItem() throws Exception {
         ItemDto dto = new ItemDto();
         dto.setName("name");
         dto.setDescription("desc");
@@ -65,7 +65,7 @@ class ItemControllerTest {
     }
 
     @Test
-    void shouldEditItem() throws Exception {
+    public void shouldEditItem() throws Exception {
         ItemDto dto = new ItemDto();
         dto.setName("n");
         dto.setDescription("d");
@@ -88,7 +88,7 @@ class ItemControllerTest {
     }
 
     @Test
-    void shouldGetItemAndItemsAndSearch() throws Exception {
+    public void shouldGetItemAndItemsAndSearch() throws Exception {
         when(itemClient.getItem(anyLong(), anyLong())).thenReturn(ResponseEntity.ok("it"));
         when(itemClient.getItems(anyLong())).thenReturn(ResponseEntity.ok("list"));
         when(itemClient.search(anyLong(), anyString())).thenReturn(ResponseEntity.ok("found"));
@@ -111,7 +111,7 @@ class ItemControllerTest {
     }
 
     @Test
-    void shouldAddComment() throws Exception {
+    public void shouldAddComment() throws Exception {
         CommentDto c = new CommentDto(1, "author", LocalDateTime.now(), "text");
         when(itemClient.addComment(anyLong(), anyLong(), any(CommentDto.class))).thenReturn(ResponseEntity.ok("commented"));
 

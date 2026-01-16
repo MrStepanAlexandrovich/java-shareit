@@ -12,14 +12,14 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
 
-class ItemClientTest {
+public class ItemClientTest {
     private RestTemplate rest;
     private RestTemplateBuilder builder;
     private ItemClient client;
     private AutoCloseable mocks;
 
     @BeforeEach
-    void setUp() {
+    public void setUp() {
         mocks = MockitoAnnotations.openMocks(this);
         rest = mock(RestTemplate.class);
         builder = mock(RestTemplateBuilder.class);
@@ -31,12 +31,12 @@ class ItemClientTest {
     }
 
     @org.junit.jupiter.api.AfterEach
-    void tearDown() throws Exception {
+    public void tearDown() throws Exception {
         if (mocks != null) mocks.close();
     }
 
     @Test
-    void shouldCallEndpoints() {
+    public void shouldCallEndpoints() {
         when(rest.exchange(anyString(), any(HttpMethod.class), any(), eq(Object.class), any(Object[].class)))
                 .thenReturn(ResponseEntity.ok("x"));
 

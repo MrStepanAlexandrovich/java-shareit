@@ -27,7 +27,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 
 @ExtendWith(MockitoExtension.class)
-class BookingControllerTest {
+public class BookingControllerTest {
 
     private MockMvc mockMvc;
 
@@ -37,7 +37,7 @@ class BookingControllerTest {
     private final ObjectMapper objectMapper = new ObjectMapper().registerModule(new JavaTimeModule());
 
     @BeforeEach
-    void setUp() {
+    public void setUp() {
         BookingController controller = new BookingController(bookingClient);
 
         LocalValidatorFactoryBean validator = new LocalValidatorFactoryBean();
@@ -51,7 +51,7 @@ class BookingControllerTest {
     }
 
     @Test
-    void shouldGetBookingsAndReturnClientResponse() throws Exception {
+    public void shouldGetBookingsAndReturnClientResponse() throws Exception {
         when(bookingClient.getBookings(anyLong(), any(BookingState.class), anyInt(), anyInt()))
                 .thenReturn(ResponseEntity.ok("ok"));
 
@@ -67,7 +67,7 @@ class BookingControllerTest {
     }
 
     @Test
-    void shouldBookItemAndReturnCreated() throws Exception {
+    public void shouldBookItemAndReturnCreated() throws Exception {
         BookItemRequestDto dto = new BookItemRequestDto();
         dto.setItemId(1L);
         dto.setStart(LocalDateTime.now().plusDays(1));
@@ -87,7 +87,7 @@ class BookingControllerTest {
     }
 
     @Test
-    void shouldApproveBookingAndReturnOk() throws Exception {
+    public void shouldApproveBookingAndReturnOk() throws Exception {
         when(bookingClient.approveBooking(anyLong(), anyLong(), anyBoolean()))
                 .thenReturn(ResponseEntity.ok("approved"));
 
@@ -101,7 +101,7 @@ class BookingControllerTest {
     }
 
     @Test
-    void shouldGetBookingAndReturnOk() throws Exception {
+    public void shouldGetBookingAndReturnOk() throws Exception {
         when(bookingClient.getBooking(anyLong(), anyLong()))
                 .thenReturn(ResponseEntity.ok("booking"));
 
@@ -114,7 +114,7 @@ class BookingControllerTest {
     }
 
     @Test
-    void shouldGetUsersItemsThatBookedAndReturnOk() throws Exception {
+    public void shouldGetUsersItemsThatBookedAndReturnOk() throws Exception {
         when(bookingClient.getUsersItemsThatBooked(anyLong(), any(BookingState.class)))
                 .thenReturn(ResponseEntity.ok("owner"));
 

@@ -12,9 +12,9 @@ import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-class DtoSanityTest {
+public class DtoSanityTest {
     @Test
-    void itemDtoGettersSetters() {
+    public void itemDtoGettersSetters() {
         ItemDto i = new ItemDto();
         i.setId(1);
         i.setName("n");
@@ -30,7 +30,7 @@ class DtoSanityTest {
     }
 
     @Test
-    void userDtoGettersSetters() {
+    public void userDtoGettersSetters() {
         UserCreateDto u = new UserCreateDto();
         u.setName("x");
         u.setEmail("e@e.com");
@@ -46,7 +46,7 @@ class DtoSanityTest {
     }
 
     @Test
-    void requestDto() {
+    public void requestDto() {
         ItemRequestCreateDto r = new ItemRequestCreateDto();
         r.setDescription("d");
         assertEquals("d", r.getDescription());

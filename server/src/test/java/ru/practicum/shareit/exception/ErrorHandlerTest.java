@@ -5,10 +5,10 @@ import org.springframework.http.HttpStatus;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-class ErrorHandlerTest {
+public class ErrorHandlerTest {
 
     @Test
-    void handleAll() {
+    public void handleAll() {
         ErrorHandler handler = new ErrorHandler();
 
         ErrorResponse r1 = handler.handleConflictException(new ConflictException("conf"));

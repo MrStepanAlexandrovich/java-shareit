@@ -11,13 +11,13 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
 
-class UserClientTest {
+public class UserClientTest {
     private RestTemplate rest;
     private UserClient client;
     private AutoCloseable mocks;
 
     @BeforeEach
-    void setUp() {
+    public void setUp() {
         mocks = MockitoAnnotations.openMocks(this);
         rest = mock(RestTemplate.class);
         org.springframework.boot.web.client.RestTemplateBuilder builder = mock(org.springframework.boot.web.client.RestTemplateBuilder.class);
@@ -29,12 +29,12 @@ class UserClientTest {
     }
 
     @org.junit.jupiter.api.AfterEach
-    void tearDown() throws Exception {
+    public void tearDown() throws Exception {
         if (mocks != null) mocks.close();
     }
 
     @Test
-    void shouldCallUserEndpoints() {
+    public void shouldCallUserEndpoints() {
         when(rest.exchange(anyString(), any(HttpMethod.class), any(), eq(Object.class), any(Object[].class))).thenReturn(ResponseEntity.ok("u"));
 
         assertEquals("u", client.getUser(1).getBody());

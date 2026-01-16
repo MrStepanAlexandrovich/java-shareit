@@ -10,10 +10,10 @@ import java.time.LocalDateTime;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-class ItemMapperTest {
+public class ItemMapperTest {
 
     @Test
-    void toItemDtoAndBack() {
+    public void toItemDtoAndBack() {
         User owner = new User(10, "Owner", "owner@example.com");
         Item item = new Item();
         item.setId(5);

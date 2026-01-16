@@ -23,7 +23,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @ExtendWith(MockitoExtension.class)
-class UserControllerTest {
+public class UserControllerTest {
     private MockMvc mockMvc;
 
     @Mock
@@ -32,7 +32,7 @@ class UserControllerTest {
     private final ObjectMapper objectMapper = new ObjectMapper().registerModule(new JavaTimeModule());
 
     @BeforeEach
-    void setUp() {
+    public void setUp() {
         UserController controller = new UserController(userClient);
         LocalValidatorFactoryBean validator = new LocalValidatorFactoryBean();
         validator.afterPropertiesSet();
@@ -44,7 +44,7 @@ class UserControllerTest {
     }
 
     @Test
-    void shouldGetUser() throws Exception {
+    public void shouldGetUser() throws Exception {
         when(userClient.getUser(anyLong())).thenReturn(ResponseEntity.ok("ok"));
 
         mockMvc.perform(get("/users/{userId}", 1))
@@ -55,7 +55,7 @@ class UserControllerTest {
     }
 
     @Test
-    void shouldCreateUser() throws Exception {
+    public void shouldCreateUser() throws Exception {
         UserCreateDto dto = new UserCreateDto();
         dto.setName("John");
         dto.setEmail("john@example.com");
@@ -72,7 +72,7 @@ class UserControllerTest {
     }
 
     @Test
-    void shouldEditUser() throws Exception {
+    public void shouldEditUser() throws Exception {
         UserEditDto dto = new UserEditDto();
         dto.setName("Jane");
         dto.setEmail("jane@example.com");
@@ -90,7 +90,7 @@ class UserControllerTest {
     }
 
     @Test
-    void shouldRemoveUser() throws Exception {
+    public void shouldRemoveUser() throws Exception {
         doNothing().when(userClient).removeUser(anyLong());
 
         mockMvc.perform(delete("/users/{userId}", 3))

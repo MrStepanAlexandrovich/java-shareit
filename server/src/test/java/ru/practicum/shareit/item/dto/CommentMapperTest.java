@@ -6,10 +6,10 @@ import ru.practicum.shareit.user.model.User;
 import java.time.LocalDateTime;
 import static org.junit.jupiter.api.Assertions.*;
 
-class CommentMapperTest {
+public class CommentMapperTest {
 
     @Test
-    void toCommentDto() {
+    public void toCommentDto() {
         User author = new User(2, "Author", "a@example.com");
         Comment comment = new Comment();
         comment.setId(3);

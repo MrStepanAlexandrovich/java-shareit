@@ -30,7 +30,7 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
-class ItemServiceImplTest {
+public class ItemServiceImplTest {
 
     @Mock
     private ItemRepository itemRepository;
@@ -50,7 +50,7 @@ class ItemServiceImplTest {
     private User owner;
 
     @BeforeEach
-    void setUp() {
+    public void setUp() {
         owner = new User(10, "O", "o@o.com");
         item = new Item();
         item.setId(5);
@@ -61,7 +61,7 @@ class ItemServiceImplTest {
     }
 
     @Test
-    void editSuccess() {
+    public void editSuccess() {
         ItemDto dto = new ItemDto();
         dto.setName("New");
         dto.setDescription("NewDesc");
@@ -77,14 +77,14 @@ class ItemServiceImplTest {
     }
 
     @Test
-    void editNotFound() {
+    public void editNotFound() {
         ItemDto dto = new ItemDto();
         when(itemRepository.findById(6)).thenReturn(Optional.empty());
         assertThrows(NotFoundException.class, () -> itemService.edit(6, dto, 10));
     }
 
     @Test
-    void editForbidden() {
+    public void editForbidden() {
         Item other = new Item();
         other.setId(7);
         other.setOwner(new User(99, "X", "x@x.com"));
@@ -94,33 +94,33 @@ class ItemServiceImplTest {
     }
 
     @Test
-    void getSuccess() {
+    public void getSuccess() {
         when(itemRepository.findById(5)).thenReturn(Optional.of(item));
         var res = itemService.get(5);
         assertEquals(5, res.getId());
     }
 
     @Test
-    void getNotFound() {
+    public void getNotFound() {
         when(itemRepository.findById(8)).thenReturn(Optional.empty());
         assertThrows(NotFoundException.class, () -> itemService.get(8));
     }
 
     @Test
-    void searchBlankReturnsEmpty() {
+    public void searchBlankReturnsEmpty() {
         var res = itemService.search("   ");
         assertTrue(res.isEmpty());
     }
 
     @Test
-    void getAllReturnsList() {
+    public void getAllReturnsList() {
         when(itemRepository.findByOwnerId(10)).thenReturn(List.of(item));
         var res = itemService.getAll(10);
         assertEquals(1, res.size());
     }
 
     @Test
-    void addWithoutRequestSuccess() {
+    public void addWithoutRequestSuccess() {
         ItemCreateDto create = new ItemCreateDto();
         create.setName("N");
         create.setDescription("D");
@@ -138,7 +138,7 @@ class ItemServiceImplTest {
     }
 
     @Test
-    void addWithRequestNotFound() {
+    public void addWithRequestNotFound() {
         ItemCreateDto create = new ItemCreateDto();
         create.setRequestId(99);
         when(userRepository.findById(11)).thenReturn(Optional.of(new User(11, "U", "u@e.com")));
@@ -147,7 +147,7 @@ class ItemServiceImplTest {
     }
 
     @Test
-    void addCommentSuccess() {
+    public void addCommentSuccess() {
         CommentDto commentDto = new CommentDto(0, "", LocalDateTime.now(), "ok");
 
         User user = new User(3, "B", "b@b.com");
@@ -172,14 +172,14 @@ class ItemServiceImplTest {
     }
 
     @Test
-    void addCommentNoUser() {
+    public void addCommentNoUser() {
         CommentDto commentDto = new CommentDto(0, "", LocalDateTime.now(), "");
         when(userRepository.findById(4)).thenReturn(Optional.empty());
         assertThrows(NotFoundException.class, () -> itemService.addComment(commentDto, 4, 5));
     }
 
     @Test
-    void addCommentNoBooking() {
+    public void addCommentNoBooking() {
         CommentDto commentDto = new CommentDto(0, "", LocalDateTime.now(), "");
         User user = new User(6, "U", "u@e.com");
         when(userRepository.findById(6)).thenReturn(Optional.of(user));
@@ -188,7 +188,7 @@ class ItemServiceImplTest {
     }
 
     @Test
-    void addCommentBadRequestIfBookingFuture() {
+    public void addCommentBadRequestIfBookingFuture() {
         CommentDto commentDto = new CommentDto(0, "", LocalDateTime.now(), "");
         User user = new User(7, "U", "u@e.com");
         Item it = new Item(); it.setId(5);

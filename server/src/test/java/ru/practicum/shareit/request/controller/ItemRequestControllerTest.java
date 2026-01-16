@@ -18,7 +18,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @WebMvcTest(controllers = ItemRequestController.class)
-class ItemRequestControllerTest {
+public class ItemRequestControllerTest {
 
     @Autowired
     private MockMvc mockMvc;
@@ -30,13 +30,13 @@ class ItemRequestControllerTest {
     private ItemRequestService itemRequestService;
 
     @Test
-    void getUsersRequests() throws Exception {
+    public void getUsersRequests() throws Exception {
         when(itemRequestService.getUsersRequests(2)).thenReturn(List.of());
         mockMvc.perform(get("/requests").header("X-Sharer-User-Id", "2")).andExpect(status().isOk());
     }
 
     @Test
-    void addRequest() throws Exception {
+    public void addRequest() throws Exception {
         ItemRequestCreateDto create = new ItemRequestCreateDto();
         create.setDescription("Need");
 
@@ -49,13 +49,13 @@ class ItemRequestControllerTest {
     }
 
     @Test
-    void getAllOtherRequests() throws Exception {
+    public void getAllOtherRequests() throws Exception {
         when(itemRequestService.getOthersRequests(2)).thenReturn(List.of());
         mockMvc.perform(get("/requests/all").header("X-Sharer-User-Id", "2")).andExpect(status().isOk());
     }
 
     @Test
-    void getRequest() throws Exception {
+    public void getRequest() throws Exception {
         when(itemRequestService.getRequest(5)).thenReturn(new ItemRequestResponseDto());
         mockMvc.perform(get("/requests/5")).andExpect(status().isOk());
     }

@@ -17,7 +17,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @WebMvcTest(controllers = UserController.class)
-class UserControllerTest {
+public class UserControllerTest {
 
     @Autowired
     private MockMvc mockMvc;
@@ -29,7 +29,7 @@ class UserControllerTest {
     private ObjectMapper objectMapper;
 
     @Test
-    void getUser() throws Exception {
+    public void getUser() throws Exception {
         when(userService.get(1)).thenReturn(new UserDto(1, "N", "e@e.com"));
 
         mockMvc.perform(get("/users/1"))
@@ -38,7 +38,7 @@ class UserControllerTest {
     }
 
     @Test
-    void createUser() throws Exception {
+    public void createUser() throws Exception {
         UserCreateDto create = new UserCreateDto(0, "N", "e@e.com");
         when(userService.add(any())).thenReturn(new UserDto(2, "N", "e@e.com"));
 
@@ -50,7 +50,7 @@ class UserControllerTest {
     }
 
     @Test
-    void editUser() throws Exception {
+    public void editUser() throws Exception {
         UserEditDto edit = new UserEditDto();
         edit.setId(1);
         edit.setName("N2");
@@ -66,7 +66,7 @@ class UserControllerTest {
     }
 
     @Test
-    void deleteUser() throws Exception {
+    public void deleteUser() throws Exception {
         doNothing().when(userService).delete(1);
         mockMvc.perform(delete("/users/1"))
                 .andExpect(status().isOk());

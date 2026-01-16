@@ -22,7 +22,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @ExtendWith(MockitoExtension.class)
-class ItemRequestControllerTest {
+public class ItemRequestControllerTest {
     private MockMvc mockMvc;
 
     @Mock
@@ -31,7 +31,7 @@ class ItemRequestControllerTest {
     private final ObjectMapper objectMapper = new ObjectMapper().registerModule(new JavaTimeModule());
 
     @BeforeEach
-    void setUp() {
+    public void setUp() {
         ItemRequestController controller = new ItemRequestController(itemRequestClient);
         LocalValidatorFactoryBean validator = new LocalValidatorFactoryBean();
         validator.afterPropertiesSet();
@@ -43,7 +43,7 @@ class ItemRequestControllerTest {
     }
 
     @Test
-    void shouldGetUsersRequests() throws Exception {
+    public void shouldGetUsersRequests() throws Exception {
         when(itemRequestClient.getUsersRequests(anyInt())).thenReturn(ResponseEntity.ok("ok"));
 
         mockMvc.perform(get("/requests").header("X-Sharer-User-Id", "1"))
@@ -54,7 +54,7 @@ class ItemRequestControllerTest {
     }
 
     @Test
-    void shouldAddRequest() throws Exception {
+    public void shouldAddRequest() throws Exception {
         ItemRequestCreateDto dto = new ItemRequestCreateDto();
         dto.setDescription("d");
 
@@ -72,7 +72,7 @@ class ItemRequestControllerTest {
     }
 
     @Test
-    void shouldGetAllOtherRequestsAndGetRequest() throws Exception {
+    public void shouldGetAllOtherRequestsAndGetRequest() throws Exception {
         when(itemRequestClient.getOthersRequests(anyInt())).thenReturn(ResponseEntity.ok("others"));
         when(itemRequestClient.getRequest(anyInt())).thenReturn(ResponseEntity.ok("req"));
 

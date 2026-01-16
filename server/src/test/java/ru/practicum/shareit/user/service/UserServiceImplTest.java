@@ -23,7 +23,7 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
-class UserServiceImplTest {
+public class UserServiceImplTest {
 
     @Mock
     private UserRepository userRepository;
@@ -37,12 +37,12 @@ class UserServiceImplTest {
     private User user;
 
     @BeforeEach
-    void setUp() {
+    public void setUp() {
         user = new User(1, "John", "john@mail.com");
     }
 
     @Test
-    void addSuccess() {
+    public void addSuccess() {
         UserCreateDto create = new UserCreateDto(0, "John", "john@mail.com");
         when(userRepository.findAll()).thenReturn(List.of());
         when(userRepository.save(any())).thenAnswer(i -> {
@@ -58,7 +58,7 @@ class UserServiceImplTest {
     }
 
     @Test
-    void addConflict() {
+    public void addConflict() {
         UserCreateDto create = new UserCreateDto(0, "John", "john@mail.com");
         when(userRepository.findAll()).thenReturn(List.of(user));
 
@@ -66,20 +66,20 @@ class UserServiceImplTest {
     }
 
     @Test
-    void getSuccess() {
+    public void getSuccess() {
         when(userRepository.findById(1)).thenReturn(Optional.of(user));
         UserDto dto = userService.get(1);
         assertEquals("John", dto.getName());
     }
 
     @Test
-    void getNotFound() {
+    public void getNotFound() {
         when(userRepository.findById(2)).thenReturn(Optional.empty());
         assertThrows(NotFoundException.class, () -> userService.get(2));
     }
 
     @Test
-    void editSuccess() {
+    public void editSuccess() {
         UserEditDto edit = new UserEditDto();
         edit.setId(1);
         edit.setName(null);
@@ -93,7 +93,7 @@ class UserServiceImplTest {
     }
 
     @Test
-    void deleteInvokesRepository() {
+    public void deleteInvokesRepository() {
         doNothing().when(userRepository).deleteById(1);
         userService.delete(1);
         verify(userRepository).deleteById(1);

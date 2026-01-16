@@ -7,9 +7,9 @@ import org.springframework.boot.SpringApplication;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-class ShareItGatewayTest {
+public class ShareItGatewayTest {
     @Test
-    void mainShouldCallSpringApplicationRun() {
+    public void mainShouldCallSpringApplicationRun() {
         try (MockedStatic<SpringApplication> mocked = Mockito.mockStatic(SpringApplication.class)) {
             mocked.when(() -> SpringApplication.run(ShareItGateway.class, new String[]{})).thenReturn(null);
 
