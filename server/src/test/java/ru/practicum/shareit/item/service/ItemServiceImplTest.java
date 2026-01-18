@@ -113,6 +113,40 @@ public class ItemServiceImplTest {
     }
 
     @Test
+    public void searchWithResults() {
+        when(itemRepository.findByNameContainingIgnoreCaseAndIsAvailableTrueOrDescriptionContainingIgnoreCaseAndIsAvailableTrue(
+                "drill", "drill")).thenReturn(List.of(item));
+
+        var res = itemService.search("drill");
+        assertEquals(1, res.size());
+    }
+
+    @Test
+    public void searchNoResults() {
+        when(itemRepository.findByNameContainingIgnoreCaseAndIsAvailableTrueOrDescriptionContainingIgnoreCaseAndIsAvailableTrue(
+                "xyz", "xyz")).thenReturn(List.of());
+
+        var res = itemService.search("xyz");
+        assertTrue(res.isEmpty());
+    }
+
+    @Test
+    public void editPartialUpdate() {
+        ItemDto dto = new ItemDto();
+        dto.setName(null);
+        dto.setDescription(null);
+        dto.setAvailable(null);
+
+        when(itemRepository.findById(5)).thenReturn(Optional.of(item));
+        when(itemRepository.save(any())).thenAnswer(i -> i.getArgument(0));
+
+        ItemDto res = itemService.edit(5, dto, 10);
+        assertEquals("Drill", res.getName());
+        assertEquals("Desc", res.getDescription());
+        assertTrue(res.getAvailable());
+    }
+
+    @Test
     public void getAllReturnsList() {
         when(itemRepository.findByOwnerId(10)).thenReturn(List.of(item));
         var res = itemService.getAll(10);

@@ -93,5 +93,25 @@ public class ItemRequestServiceImplTest {
         var res = itemRequestService.addRequest(4, create);
         assertEquals(10, res.getId());
     }
+
+    @Test
+    public void getUsersRequestsUserNotFound() {
+        when(userRepository.findById(99)).thenReturn(Optional.empty());
+        assertThrows(NotFoundException.class, () -> itemRequestService.getUsersRequests(99));
+    }
+
+    @Test
+    public void getOthersRequestsUserNotFound() {
+        when(userRepository.findById(99)).thenReturn(Optional.empty());
+        assertThrows(NotFoundException.class, () -> itemRequestService.getOthersRequests(99));
+    }
+
+    @Test
+    public void addRequestUserNotFound() {
+        when(userRepository.findById(99)).thenReturn(Optional.empty());
+        ItemRequestCreateDto create = new ItemRequestCreateDto();
+        create.setDescription("Need");
+        assertThrows(NotFoundException.class, () -> itemRequestService.addRequest(99, create));
+    }
 }
 

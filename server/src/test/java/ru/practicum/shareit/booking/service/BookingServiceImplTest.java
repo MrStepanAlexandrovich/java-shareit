@@ -215,4 +215,53 @@ public class BookingServiceImplTest {
         var rej = bookingService.getBookingsByItemsOwner(3, ru.practicum.shareit.booking.model.State.REJECTED);
         assertEquals(1, rej.size());
     }
+
+    @Test
+    public void createBookingUserNotFound() {
+        when(userRepository.findById(99)).thenReturn(Optional.empty());
+        createDto.setUserId(99);
+        assertThrows(NotFoundException.class, () -> bookingService.createBooking(createDto));
+    }
+
+    @Test
+    public void createBookingItemNotFound() {
+        when(userRepository.findById(2)).thenReturn(Optional.of(user));
+        when(itemRepository.findById(99)).thenReturn(Optional.empty());
+        createDto.setItemId(99);
+        assertThrows(NotFoundException.class, () -> bookingService.createBooking(createDto));
+    }
+
+    @Test
+    public void createBookingStartEqualsEnd() {
+        LocalDateTime now = LocalDateTime.now().plusDays(1);
+        createDto.setStart(now);
+        createDto.setEnd(now);
+        when(userRepository.findById(2)).thenReturn(Optional.of(user));
+        assertThrows(BadRequestException.class, () -> bookingService.createBooking(createDto));
+    }
+
+    @Test
+    public void getBookingSuccess() {
+        Booking booking = new Booking();
+        booking.setId(1);
+        booking.setBooker(user);
+        booking.setItem(item);
+        booking.setStatus(Status.APPROVED);
+        when(bookingRepository.findBooking(1)).thenReturn(Optional.of(booking));
+
+        BookingDto dto = bookingService.getBooking(1);
+        assertEquals(1, dto.getId());
+    }
+
+    @Test
+    public void getBookingsOfUserNotFound() {
+        when(userRepository.findById(99)).thenReturn(Optional.empty());
+        assertThrows(NotFoundException.class, () -> bookingService.getBookingsOfUser(99, ru.practicum.shareit.booking.model.State.ALL));
+    }
+
+    @Test
+    public void getBookingsByItemsOwnerNotFound() {
+        when(userRepository.findById(99)).thenReturn(Optional.empty());
+        assertThrows(NotFoundException.class, () -> bookingService.getBookingsByItemsOwner(99, ru.practicum.shareit.booking.model.State.ALL));
+    }
 }

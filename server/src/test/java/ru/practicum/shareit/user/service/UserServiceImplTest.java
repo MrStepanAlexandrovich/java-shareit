@@ -98,4 +98,27 @@ public class UserServiceImplTest {
         userService.delete(1);
         verify(userRepository).deleteById(1);
     }
+
+    @Test
+    public void editWithNameOnly() {
+        UserEditDto edit = new UserEditDto();
+        edit.setId(1);
+        edit.setName("NewName");
+        edit.setEmail(null);
+        when(userRepository.findById(1)).thenReturn(Optional.of(user));
+        when(userRepository.save(any())).thenAnswer(i -> i.getArgument(0));
+
+        UserDto res = userService.edit(1, edit);
+        assertEquals("NewName", res.getName());
+        assertEquals("john@mail.com", res.getEmail());
+    }
+
+    @Test
+    public void editNotFound() {
+        UserEditDto edit = new UserEditDto();
+        edit.setId(999);
+        when(userRepository.findById(999)).thenReturn(Optional.empty());
+
+        assertThrows(NotFoundException.class, () -> userService.edit(999, edit));
+    }
 }
