@@ -35,74 +35,76 @@ public class BookingServiceImpl implements BookingService {
 
     @Override
     public BookingDto createBooking(BookingCreateDto bookingCreateDto) {
-        log.info("Start of creating booking: " + bookingCreateDto.toString());
+        log.info("Start of creating booking. User id: {}, item id: {}",
+                bookingCreateDto.getUserId(), bookingCreateDto.getItemId());
 
         Booking booking = BookingMapper.toBooking(bookingCreateDto);
-
-        log.trace("Booking DTO mapped to booking");
 
         booking.setStatus(Status.WAITING);
 
         User user = userRepository.findById(booking.getBooker().getId())
                 .orElseThrow(() -> {
-                    log.error("User with id = " + booking.getBooker().getId()
-                            + " wasn't found");
+                    log.error("User with id = {} wasn't found", bookingCreateDto.getUserId());
 
                     return new NotFoundException("User with id = " + booking.getBooker().getId()
                             + " wasn't found");
                 });
 
-        log.trace("User with id = " + booking.getBooker().getId() + " was found in database");
+        log.trace("User with id = {} was found", booking.getBooker().getId());
 
         booking.setBooker(user);
 
         if (booking.getStart().isAfter(booking.getEnd()) || booking.getStart().equals(booking.getEnd())) {
-            log.error("End time should be after begin time");
+            log.warn("End time should be after begin time. Start time: {}, end time: {}",
+                    booking.getStart(), booking.getEnd());
 
             throw new BadRequestException("End time should be after begin time");
         }
 
-        log.trace("Booking start time and end time validated");
+        log.trace("Booking start time = {} and end time = {}. Validated", booking.getStart(), booking.getEnd());
 
         Item item = itemRepository.findById(booking.getItem().getId())
-                .orElseThrow(() -> new NotFoundException("Item with id = " + booking.getItem().getId()
-                        + " wasn't found"));
+                .orElseThrow(() -> {
+                    log.warn("Item with id = {} wasn't found", booking.getItem().getId());
 
-        log.trace("Item with id = " + booking.getItem().getId() + " was found in database");
+                    return new NotFoundException("Item with id = " + booking.getItem().getId()
+                            + " wasn't found");
+                });
+
+        log.trace("Item with id = {} was found in database", booking.getItem().getId());
 
         if (!item.getIsAvailable()) {
-            log.error("Item with id = " + booking.getItem().getId() + " is unavailable");
+            log.warn("Item with id = {} is unavailable", booking.getItem().getId());
 
             throw new BadRequestException("Item with id = " + booking.getItem().getId() + " is unavailable");
         }
 
-        log.trace("Item is available");
+        log.trace("Item with id = {} is available", item.getId());
 
         booking.setItem(item);
 
-        bookingRepository.save(booking);
+        Booking booking1 = bookingRepository.save(booking);
 
-        log.info("Booking saved to database");
+        log.info("Booking saved to database. ID = {}", booking1.getId());
 
         return BookingMapper.toBookingDto(booking);
     }
 
     @Override
     public BookingDto approveBooking(int userId, int bookingId, boolean isApproved) {
-        log.info(String.format("Start of approving booking. User id: %d, booking id: %d, approved: %b",
-                userId, bookingId, isApproved));
+        log.info("Start of approving booking. User id = {}, booking id = {}, approved: {}", userId, bookingId, isApproved);
 
         Booking booking1 = bookingRepository.findBooking(bookingId)
                 .orElseThrow(() -> {
-                    log.error("Booking with id = " + bookingId + " wasn't found");
+                    log.warn("Booking with id = {} wasn't found", bookingId);
 
                     return new NotFoundException("Booking with id = " + bookingId + " wasn't found");
                 });
 
-        log.trace("Booking with id = " + bookingId + " was found in database");
+        log.trace("Booking with id = {} was found in database", bookingId);
 
         if (booking1.getItem().getOwner().getId() != userId) {
-            log.error("User with id = " + userId + " cannot approve booking on this request");
+            log.warn("User with id = {} cannot approve booking on this request", userId);
 
             throw new ForbiddenException("User with id = " + userId
                     + " cannot approveBooking on this request");
@@ -110,11 +112,12 @@ public class BookingServiceImpl implements BookingService {
 
         userRepository.findById(userId)
                 .orElseThrow(() -> {
-                    log.error("User with id = " + userId + " wasn't found");
+                    log.error("User with id = {} wasn't found", userId);
+
                     return new NotFoundException("User with id = " + userId + " wasn't found");
                 });
 
-        log.trace("User with id = " + userId + " was found in database");
+        log.trace("User with id = {} was found in database", userId);
 
         if (isApproved) {
             bookingRepository.updateStatus(bookingId, Status.APPROVED);
@@ -122,24 +125,32 @@ public class BookingServiceImpl implements BookingService {
             bookingRepository.updateStatus(bookingId, Status.REJECTED);
         }
 
-        log.trace("Booking status updated");
+        log.trace("Booking status updated to {}", isApproved ? Status.APPROVED : Status.REJECTED);
 
         BookingDto bookingDto = BookingMapper.toBookingDto(
-                bookingRepository.findBooking(bookingId).orElseThrow(() -> new NotFoundException("Not found"))
+                bookingRepository.findBooking(bookingId).orElseThrow(() -> {
+                            log.warn("Booking with id = {} wasn't found after status update", bookingId);
+
+                            return new NotFoundException("Not found");
+                        }
+                )
         );
 
-        log.info("Booking with id = " + bookingId + " got status updated in database. Approved: " + isApproved);
+        log.info("Booking with id = {} got status updated in database. Approved: {}", bookingId,
+                isApproved ? Status.APPROVED : Status.REJECTED);
 
         return bookingDto;
     }
 
     @Override
     public BookingDto getBooking(int bookingId) {
-        log.info("Getting booking with id = " + bookingId + "...");
+        log.info("Getting booking with id = {}...", bookingId);
+
         BookingDto bookingDto = BookingMapper.toBookingDto(bookingRepository.findBooking(bookingId)
                 .orElseThrow(() -> {
-                    log.error("Booking with id = " + bookingId + " wasn't found");
-                    return new NotFoundException("Booking with id = " + bookingId + " wasn't found"))
+                    log.warn("Booking with id = {} wasn't found", bookingId);
+
+                    return new NotFoundException("Booking with id = " + bookingId + " wasn't found");
                 })
         );
 
@@ -149,15 +160,14 @@ public class BookingServiceImpl implements BookingService {
 
     @Override
     public Collection<BookingDto> getBookingsByItemsOwner(int userId, State state) {
-        log.info("Getting booking by items owner and state...");
-        log.debug(String.format("User id: %d. State: %s", userId, state.toString()));
+        log.info("Getting booking by items owner and state. User id: {}. State: {}", userId, state.toString());
 
         Sort newestFirst = Sort.by(Sort.Direction.DESC, "start");
 
-        userRepository.findById(userId).orElseThrow(() ->  {
-                    log.error("User with id = " + userId + " wasn't found");
+        userRepository.findById(userId).orElseThrow(() -> {
+                    log.warn("User with id = {} wasn't found", userId);
 
-                   return new NotFoundException("User with id = " + userId + " wasn't found");
+                    return new NotFoundException("User with id = " + userId + " wasn't found");
                 }
         );
 
@@ -179,29 +189,31 @@ public class BookingServiceImpl implements BookingService {
             case REJECTED -> bookingRepository.findByItemOwnerIdAndStatus(userId, Status.REJECTED, newestFirst);
         };
 
-        List<BookingDto> bookingDtos = bookings.stream()
+        List<BookingDto> bookingDtos = bookings
+                .stream()
+                .peek(b -> log.debug("Found booking with id = {} for item owned by user with id = {}",
+                        b.getId(), userId))
                 .map(BookingMapper::toBookingDto)
                 .toList();
 
-        log.info("Got bookings from database");
+        log.info("Got {} bookings from database with owner's id = {}", bookingDtos.size(), userId);
 
         return bookingDtos;
     }
 
     @Override
     public Collection<BookingDto> getBookingsOfUser(int userId, State state) {
-        log.info("Starting getting bookings of user...");
-        log.debug(String.format("User id: %d. State: %s", userId, state.toString()));
+        log.info("Starting getting bookings of user. User id: {}. State: {}", userId, state.toString());
 
         userRepository.findById(userId).orElseThrow(
                 () -> {
-                    log.error("User with id = " + userId + " wasn't found");
+                    log.warn("User with id = {} wasn't found", userId);
 
                     return new NotFoundException("User with id = " + userId + " wasn't found");
                 }
         );
 
-        log.trace("User with id = " + userId + " was found in database");
+        log.trace("User with id = {} was found in database", userId);
 
         Sort newestFirst = Sort.by(Sort.Direction.DESC, "start");
 
@@ -224,10 +236,11 @@ public class BookingServiceImpl implements BookingService {
         };
 
         List<BookingDto> bookingDtos = bookings.stream()
+                .peek(b -> log.debug("Found booking with id = {} for user with id = {}", b.getId(), userId))
                 .map(BookingMapper::toBookingDto)
                 .toList();
 
-        log.info("Got bookings from database");
+        log.info("Got {} bookings from database", bookingDtos.size());
 
         return bookingDtos;
     }

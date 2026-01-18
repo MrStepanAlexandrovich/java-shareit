@@ -41,45 +41,38 @@ public class ItemServiceImpl implements ItemService {
             ItemDto itemDto,
             int userId
     ) {
-        log.info("Start of editing item...");
-        log.debug("item id: {}, user id: {},  item dto: {}", itemId, userId, itemDto.toString());
+        log.info("Start of editing item with id = {}. User id: {}", itemId, userId);
 
         Item newItem = ItemMapper.toItem(itemDto);
         checkUser(userId, itemId);
 
         log.trace("User with id = {} validated", userId);
 
-        Optional<Item> itemOptional = itemRepository.findById(itemId);
-        Item item;
-
-        if (itemOptional.isEmpty()) {
+        Item item = itemRepository.findById(itemId).orElseThrow(() -> {
             log.warn("Item with id = {} doesn't exist", itemId);
 
-            throw new NotFoundException("Item with id = " + itemId + " doesn't exist");
-        } else {
-            item = itemOptional.get();
+            return new NotFoundException("Item with id = " + itemId + " doesn't exist");
+        });
 
-            if (newItem.getName() != null) {
-                item.setName(newItem.getName());
-                log.trace("Item with id = {} set name: {}", itemId, newItem.getName());
-            }
-            if (newItem.getDescription() != null) {
-                item.setDescription(newItem.getDescription());
-                log.trace("Item with id = {} set description: {}", itemId, newItem.getDescription());
-            }
-            if (newItem.getIsAvailable() != null) {
-                item.setIsAvailable(newItem.getIsAvailable());
-                log.trace("Item with id = {} set available: {}", itemId, newItem.getIsAvailable());
-            }
+        if (newItem.getName() != null) {
+            item.setName(newItem.getName());
+            log.trace("Item with id = {} set name: {}", itemId, newItem.getName());
         }
+        if (newItem.getDescription() != null) {
+            item.setDescription(newItem.getDescription());
+            log.trace("Item with id = {} set description: {}", itemId, newItem.getDescription());
+        }
+        if (newItem.getIsAvailable() != null) {
+            item.setIsAvailable(newItem.getIsAvailable());
+            log.trace("Item with id = {} set available: {}", itemId, newItem.getIsAvailable());
+        }
+
 
         Item item1 = itemRepository.save(item);
 
         log.trace("Item with id = {} was succesfully edited", itemId);
 
         ItemDto itemDto1 = ItemMapper.toItemDto(item1);
-
-        log.trace("Item with id = {} was mapped to DTO", itemId);
 
         return itemDto1;
     }
@@ -88,16 +81,15 @@ public class ItemServiceImpl implements ItemService {
     public ItemWithBookingsDto get(int id) {
         log.info("Getting item with id = {}", id);
 
-        Optional<Item> itemOptional = itemRepository.findById(id);
-        if (itemOptional.isPresent()) {
-            log.info("item with id = {} was found", id);
-
-            return ItemMapper.toItemWithBookingsDto(itemOptional.get());
-        } else {
+        Item item = itemRepository.findById(id).orElseThrow(() -> {
             log.warn("item with id = {} wasn't found", id);
 
-            throw new NotFoundException("item with id = " + id + " wasn't found");
-        }
+            return new NotFoundException("item with id = " + id + " wasn't found");
+        });
+
+        log.info("item with id = {} was found", id);
+
+        return ItemMapper.toItemWithBookingsDto(item);
     }
 
     @Override
@@ -106,6 +98,7 @@ public class ItemServiceImpl implements ItemService {
 
         if (description.isBlank()) {
             log.warn("Description is blank");
+
             return List.of();
         } else {
             Collection<Item> items = itemRepository
@@ -130,19 +123,22 @@ public class ItemServiceImpl implements ItemService {
     @Override
     public Collection<ItemDto> getAll(int id) {
         log.info("Getting all items of user with id = {}", id);
+
         List<ItemDto> itemsDto = itemRepository.findByOwnerId(id)
                 .stream()
                 .map(ItemMapper::toItemDto)
                 .peek(e -> log.debug("Got item with id = {}", e.getId()))
                 .toList();
 
+        log.info("Got {} items of user with id = {}", itemsDto.size(), id);
+
         return itemsDto;
     }
 
     @Override
     public ItemDto add(ItemCreateDto itemDto, int userId) {
-        log.info("Start creating item...");
-        log.debug("Name = {}, user id = {}, request id = {}", itemDto.getName(), userId, itemDto.getRequestId());
+        log.info("Start creating item. \"Name = {}, user id = {}, request id = {}", itemDto.getName(), userId,
+                itemDto.getRequestId());
 
         Item item = ItemMapper.toItem(itemDto);
         item.setOwner(new User());
@@ -203,7 +199,7 @@ public class ItemServiceImpl implements ItemService {
         }
 
         log.trace("Comment's created time = {}, booking end = {}, booking id = {}. Validated.",
-                booking1.getId(), booking1.getEnd(), comment.getCreated()););
+                booking1.getId(), booking1.getEnd(), comment.getCreated());
 
         comment.setItem(booking1.getItem());
 
@@ -224,8 +220,10 @@ public class ItemServiceImpl implements ItemService {
             throw new NotFoundException("item with id = " + itemId + " wasn't found");
         } else {
             log.trace("Item with id = " + itemId + " was found");
+
             if (itemOptional.get().getOwner().getId() != userId) {
                 log.warn("User with id = " + userId + " is not an owner of item with id = " + itemId);
+
                 throw new ForbiddenException("User with id = " + userId + " can't update item");
             }
         }

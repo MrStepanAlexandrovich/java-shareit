@@ -14,7 +14,6 @@ import ru.practicum.shareit.user.dto.UserMapper;
 import ru.practicum.shareit.user.model.User;
 
 import java.util.Objects;
-import java.util.Optional;
 
 @Slf4j
 @Service
@@ -29,6 +28,8 @@ public class UserServiceImpl implements UserService {
         User user = UserMapper.toUser(userDto);
 
         if (isEmailUnique(user.getEmail())) {
+            log.info("Email {} is unique", userDto.getEmail());
+
             User user1 = userRepository.save(user);
 
             log.info("User was saved. ID = {}, name = {}, email = {}", user1.getId(), userDto.getName(),
@@ -44,22 +45,33 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public UserDto get(int id) {
-        Optional<User> userOptional = userRepository.findById(id);
-        if (userOptional.isPresent()) {
-            return UserMapper.toUserDto(userOptional.get());
-        } else {
-            throw new NotFoundException("User with id = " + id + " wasn't found");
-        }
+        log.info("Getting user with id = {}", id);
+
+        User user = userRepository.findById(id).orElseThrow(() -> {
+            log.warn("User with id = {} wasn't found", id);
+
+            return new NotFoundException("User with id = " + id + " wasn't found");
+        });
+
+        log.info("User with id = {} was found", id);
+
+        return UserMapper.toUserDto(user);
     }
 
     @Transactional
     @Override
     public UserDto edit(int id, UserEditDto userEditDto) {
+        log.info("Editing user with id = {}. Email = {}, name = {}", id, userEditDto.getEmail(), userEditDto.getName());
+
         User user = UserMapper.toUser(userEditDto);
 
         user.setId(id);
-        User oldUser = userRepository.findById(id).orElseThrow(() -> new NotFoundException("User with ID = "
-                + id + " wasn't found"));
+        User oldUser = userRepository.findById(id).orElseThrow(() -> {
+                    log.warn("User with ID = {} wasn't found", id);
+
+                    return new NotFoundException("User with ID = " + id + " wasn't found");
+                }
+        );
 
         if (user.getName() == null) {
             user.setName(oldUser.getName());
@@ -67,7 +79,12 @@ public class UserServiceImpl implements UserService {
             user.setEmail(oldUser.getEmail());
         }
 
-        return UserMapper.toUserDto(userRepository.save(user));
+        User user1 = userRepository.save(user);
+
+        log.info("User with id = {} was updated. New email = {}, new name = {}", id, user1.getEmail(),
+                user1.getName());
+
+        return UserMapper.toUserDto(user1);
     }
 
     @Transactional
