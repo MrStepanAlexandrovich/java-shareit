@@ -2,6 +2,7 @@ package ru.practicum.shareit.user.service;
 
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import ru.practicum.shareit.exception.ConflictException;
 import ru.practicum.shareit.exception.NotFoundException;
@@ -15,6 +16,7 @@ import ru.practicum.shareit.user.model.User;
 import java.util.Objects;
 import java.util.Optional;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class UserServiceImpl implements UserService {
@@ -22,11 +24,20 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public UserDto add(UserCreateDto userDto) {
+        log.info("Creating user. Name = {}, email = {}", userDto.getName(), userDto.getEmail());
+
         User user = UserMapper.toUser(userDto);
 
         if (isEmailUnique(user.getEmail())) {
-            return UserMapper.toUserDto(userRepository.save(user));
+            User user1 = userRepository.save(user);
+
+            log.info("User was saved. ID = {}, name = {}, email = {}", user1.getId(), userDto.getName(),
+                    userDto.getEmail());
+
+            return UserMapper.toUserDto(user1);
         } else {
+            log.warn("Email {} is not unique", userDto.getEmail());
+
             throw new ConflictException("Email is not unique");
         }
     }
@@ -62,7 +73,9 @@ public class UserServiceImpl implements UserService {
     @Transactional
     @Override
     public void delete(int id) {
+        log.info("Deleting user with id = {}", id);
         userRepository.deleteById(id);
+        log.info("User with id = {} was deleted", id);
     }
 
     private boolean isEmailUnique(String email) {
